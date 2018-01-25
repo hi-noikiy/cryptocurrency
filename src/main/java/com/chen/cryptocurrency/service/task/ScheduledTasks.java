@@ -33,6 +33,9 @@ public class ScheduledTasks implements InitializingBean {
         if (taskItems == null) {
             taskItems = Lists.newArrayList();
         }
+        if (mailRecord == null) {
+            mailRecord = Lists.newArrayList();
+        }
         taskItems.add(new TaskItem("btc_usd", "30min"));
         taskItems.add(new TaskItem("btc_usd", "1hour"));
         taskItems.add(new TaskItem("btc_usd", "2hour"));
