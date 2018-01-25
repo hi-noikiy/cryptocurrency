@@ -9,12 +9,12 @@ import org.simplejavamail.mailer.Mailer;
  * @date 2018/1/25
  */
 public class MailUtil {
-    public static void main(String[] args) {
+    public static void sendMail(String subject,String text) {
         Email email = new EmailBuilder()
                 .from("CoinServer", "81773322@qq.com")
-                .to("chen", "xiao1tt@163.com")
-                .subject("My Bakery is finally open!")
-                .text("Mom, Dad. We did the opening ceremony of our bakery!!!")
+                .to("chen", "xiao1tt@hotmail.com")
+                .subject(subject)
+                .text(text)
                 .build();
 
 
