@@ -2,6 +2,7 @@ package com.chen.cryptocurrency.controller;
 
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.KLineItem;
+import com.google.common.collect.Lists;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +28,7 @@ public class CoinController {
 
     @RequestMapping("k")
     List<KLineItem> kLine() {
-        return coinService.queryKLine();
+        return coinService.queryKLine("btc_usd","1hour");
     }
 
     @RequestMapping("macd")
@@ -35,6 +36,6 @@ public class CoinController {
         if (Objects.isNull(n)) {
             n = 10;
         }
-        return coinService.macd(n);
+        return coinService.macd(Lists.newArrayList(), n);
     }
 }
