@@ -28,4 +28,13 @@ public class MACDItem {
     public void setMacd(double macd) {
         this.macd = macd;
     }
+
+    @Override
+    public String toString() {
+        return "MACDItem{" +
+                "dif=" + dif +
+                ", dea=" + dea +
+                ", macd=" + macd +
+                '}';
+    }
 }
