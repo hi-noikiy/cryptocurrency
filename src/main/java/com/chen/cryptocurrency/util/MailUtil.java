@@ -18,6 +18,8 @@ public class MailUtil {
         Email email = new EmailBuilder()
                 .from("CoinServer", username+mailSuf)
                 .to("chen", "81773322@qq.com")
+                .to("chen", "xiao1tt@hotmail.com")
+                .to("chen", "chen81773322@gmail.com")
                 .subject(subject)
                 .text(text)
                 .build();

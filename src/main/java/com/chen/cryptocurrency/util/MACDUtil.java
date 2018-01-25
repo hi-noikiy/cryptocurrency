@@ -1,5 +1,7 @@
 package com.chen.cryptocurrency.util;
 
+import com.chen.cryptocurrency.service.bean.MACDItem;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,13 +42,12 @@ public class MACDUtil {
      *            :the mid period value.
      * @return
      */
-    public static final HashMap<String, Double> getMACD(final List<Double> list, final int shortPeriod, final int longPeriod, int midPeriod) {
-        HashMap<String, Double> macdData = new HashMap<String, Double>();
+    public static final MACDItem getMACD(final List<Double> list, final int shortPeriod, final int longPeriod, int midPeriod) {
         List<Double> diffList = new ArrayList<Double>();
-        Double shortEMA = 0.0;
-        Double longEMA = 0.0;
+        Double shortEMA;
+        Double longEMA;
         Double dif = 0.0;
-        Double dea = 0.0;
+        Double dea;
 
         for (int i = list.size() - 1; i >= 0; i--) {
             List<Double> sublist = list.subList(0, list.size() - i);
@@ -56,9 +57,10 @@ public class MACDUtil {
             diffList.add(dif);
         }
         dea = MACDUtil.getEXPMA(diffList, midPeriod);
-        macdData.put("DIF", dif);
-        macdData.put("DEA", dea);
-        macdData.put("MACD", (dif - dea) * 2);
-        return macdData;
+        MACDItem item = new MACDItem();
+        item.setDea(dea);
+        item.setDif(dif);
+        item.setMacd((dif - dea) * 2);
+        return item;
     }
 }

@@ -2,6 +2,8 @@ package com.chen.cryptocurrency.controller;
 
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.KLineItem;
+import com.chen.cryptocurrency.service.bean.MACDItem;
+import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.google.common.collect.Lists;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,16 +28,23 @@ public class CoinController {
     @Resource
     private CoinService coinService;
 
-    @RequestMapping("k")
-    List<KLineItem> kLine() {
-        return coinService.queryKLine("btc_usd","1hour");
+    @RequestMapping("/task/add")
+    String add(@RequestParam String symbol,
+               @RequestParam String type) {
+
+        coinService.addTask(symbol, type);
+        return "ok";
     }
 
-    @RequestMapping("macd")
-    List<Map<String, Double>> m(@RequestParam(required = false) Integer n) {
-        if (Objects.isNull(n)) {
-            n = 10;
-        }
-        return coinService.macd(Lists.newArrayList(), n);
+    @RequestMapping("/task/del")
+    String del(@RequestParam String symbol,
+               @RequestParam String type) {
+        coinService.delTask(symbol, type);
+        return "ok";
+    }
+
+    @RequestMapping("/task/list")
+    List<TaskItem> list() {
+        return coinService.listTask();
     }
 }

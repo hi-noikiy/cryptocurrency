@@ -2,6 +2,8 @@ package com.chen.cryptocurrency.service.task;
 
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.KLineItem;
+import com.chen.cryptocurrency.service.bean.MACDItem;
+import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.service.cache.KLineCache;
 import com.chen.cryptocurrency.util.MailUtil;
 import org.slf4j.Logger;
@@ -19,17 +21,19 @@ import java.util.Map;
  */
 @Component
 public class ScheduledTasks {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private CoinService coinService;
+
+    public static List<TaskItem> taskItems;
 
     @Scheduled(fixedRate = 1 * 60 * 1000)
     public void reportCurrentTime() {
         logger.info("开始执行检查！");
-        checkMACD("btc_usd", "1hour");
-        checkMACD("btc_usd", "2hour");
-        checkMACD("eth_usd", "1hour");
-        checkMACD("eth_usd", "2hour");
+        for (TaskItem item :
+                taskItems) {
+            checkMACD(item.getSymbol(), item.getType());
+        }
         logger.info("检查完毕！");
     }
 
@@ -40,15 +44,15 @@ public class ScheduledTasks {
         String text = "注意观察！";
 
         List<KLineItem> list = coinService.queryKLine(symbol, type);
-        List<Map<String, Double>> macdList = coinService.macd(list, 5);
+        List<MACDItem> macdList = coinService.macd(list, 5);
 
         logger.info("检查，币种：{}，时间：{}", symbol, type);
-        for (Map<String, Double> macd :
+        for (MACDItem macd :
                 macdList) {
             logger.info("结果:{}", macd.toString());
         }
 
-        Map<String, Double> macd;
+        MACDItem macd;
         boolean lowBefore = true;
         boolean highNow = true;
 
@@ -57,18 +61,18 @@ public class ScheduledTasks {
 
         for (int i = 0; i < 4; i++) {
             macd = macdList.get(i);
-            if (macd.get("DIF") > macd.get("DEA")) {
+            if (macd.getDif() > macd.getDea()) {
                 lowBefore = false;
             }
-            if (macd.get("DIF") < macd.get("DEA")) {
+            if (macd.getDif() < macd.getDea()) {
                 highBefore = false;
             }
         }
         macd = macdList.get(4);
-        if (macd.get("DIF") < macd.get("DEA")) {
+        if (macd.getDif() < macd.getDea()) {
             highNow = false;
         }
-        if (macd.get("DIF") > macd.get("DEA")) {
+        if (macd.getDif() > macd.getDea()) {
             lowNow = false;
         }
         if (lowBefore && highNow) {
