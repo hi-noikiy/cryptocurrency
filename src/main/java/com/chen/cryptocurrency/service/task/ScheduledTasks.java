@@ -4,7 +4,6 @@ import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.service.bean.MACDItem;
 import com.chen.cryptocurrency.service.bean.TaskItem;
-import com.chen.cryptocurrency.service.cache.KLineCache;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author chenxiaotong
@@ -35,10 +33,15 @@ public class ScheduledTasks implements InitializingBean {
         if (taskItems == null) {
             taskItems = Lists.newArrayList();
         }
+        taskItems.add(new TaskItem("btc_usd", "30min"));
         taskItems.add(new TaskItem("btc_usd", "1hour"));
         taskItems.add(new TaskItem("btc_usd", "2hour"));
+        taskItems.add(new TaskItem("btc_usd", "4hour"));
+
+        taskItems.add(new TaskItem("eth_usd", "30min"));
         taskItems.add(new TaskItem("eth_usd", "1hour"));
         taskItems.add(new TaskItem("eth_usd", "2hour"));
+        taskItems.add(new TaskItem("eth_usd", "4hour"));
     }
 
     @Scheduled(fixedRate = 1 * 60 * 1000)
