@@ -8,6 +8,7 @@ import com.chen.cryptocurrency.service.cache.KLineCache;
 import com.chen.cryptocurrency.util.MailUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +21,20 @@ import java.util.Map;
  * @date 2018/1/25
  */
 @Component
-public class ScheduledTasks {
+public class ScheduledTasks implements InitializingBean{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private CoinService coinService;
 
     public static List<TaskItem> taskItems;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        taskItems.add(new TaskItem("btc_usd", "1hour"));
+        taskItems.add(new TaskItem("btc_usd", "2hour"));
+        taskItems.add(new TaskItem("eth_usd", "1hour"));
+        taskItems.add(new TaskItem("eth_usd", "2hour"));
+    }
     @Scheduled(fixedRate = 1 * 60 * 1000)
     public void reportCurrentTime() {
         logger.info("开始执行检查！");

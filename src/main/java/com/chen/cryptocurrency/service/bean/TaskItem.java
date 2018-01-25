@@ -4,6 +4,14 @@ public class TaskItem {
     private String symbol;
     private String type;
 
+    public TaskItem() {
+    }
+
+    public TaskItem(String symbol, String type) {
+        this.symbol = symbol;
+        this.type = type;
+    }
+
     public String getSymbol() {
         return symbol;
     }

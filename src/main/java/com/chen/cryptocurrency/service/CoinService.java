@@ -52,16 +52,13 @@ public class CoinService {
     }
 
     public void addTask(String symbol, String type) {
-        TaskItem taskItem = new TaskItem();
-        taskItem.setSymbol(symbol);
-        taskItem.setType(type);
+        TaskItem taskItem = new TaskItem(symbol,type);
         ScheduledTasks.taskItems.add(taskItem);
     }
 
     public void delTask(String symbol, String type) {
-        TaskItem taskItem = new TaskItem();
-        taskItem.setSymbol(symbol);
-        taskItem.setType(type);
+        TaskItem taskItem = new TaskItem(symbol,type);
+
         ScheduledTasks.taskItems.remove(taskItem);
     }
 }
