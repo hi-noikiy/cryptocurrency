@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author chenxiaotong
@@ -36,15 +37,13 @@ public class ScheduledTasks implements InitializingBean {
         if (mailRecord == null) {
             mailRecord = Lists.newArrayList();
         }
-        taskItems.add(new TaskItem("btc_usd", "30min"));
-        taskItems.add(new TaskItem("btc_usd", "1hour"));
         taskItems.add(new TaskItem("btc_usd", "2hour"));
         taskItems.add(new TaskItem("btc_usd", "4hour"));
+        taskItems.add(new TaskItem("btc_usd", "6hour"));
 
-        taskItems.add(new TaskItem("eth_usd", "30min"));
-        taskItems.add(new TaskItem("eth_usd", "1hour"));
         taskItems.add(new TaskItem("eth_usd", "2hour"));
         taskItems.add(new TaskItem("eth_usd", "4hour"));
+        taskItems.add(new TaskItem("eth_usd", "6hour"));
     }
 
     @Scheduled(fixedRate = 3 * 60 * 1000)
@@ -62,10 +61,9 @@ public class ScheduledTasks implements InitializingBean {
 
 
         List<KLineItem> list = coinService.queryKLine(symbol, type);
-        List<MACDItem> macdList = coinService.macd(list, 2);
+        List<MACDItem> macdList = coinService.macd(list, 5);
 
-        for (MACDItem macd :
-                macdList) {
+        for (MACDItem macd : macdList) {
             logger.info("结果:{}", macd.toString());
         }
 
@@ -74,11 +72,56 @@ public class ScheduledTasks implements InitializingBean {
             return;
         }
 
+        checkCross(symbol, type, macdList);
+        checkTrendency(symbol, type, macdList);
+
+        mailRecord.add(macdList.toString());
+        if (mailRecord.size() > 100) {
+            mailRecord = mailRecord.subList(90, mailRecord.size());
+        }
+    }
+
+    private void checkTrendency(String symbol, String type, List<MACDItem> macdList) {
+        List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
+
+        int size = difList.size();
+
+        String buySign = "转折向上，请注意";
+        String sellSign = "转折向下，请注意";
+
+        if (difList.get(size - 1) > difList.get(size - 2)
+                && difList.get(size - 2) > difList.get(size - 3)
+                && difList.get(size - 3) < difList.get(size - 4)) {
+            String subject = "币种" + symbol + buySign;
+
+            String text = "币种：" + symbol + "\n" +
+                    "时间线：" + type + "\n" +
+                    "信号：" + buySign;
+
+            MailUtil.sendMail(subject, text);
+        }
+
+        if (difList.get(size - 1) < difList.get(size - 2)
+                && difList.get(size - 2) < difList.get(size - 3)
+                && difList.get(size - 3) > difList.get(size - 4)) {
+            String subject = "币种" + symbol + sellSign;
+
+            String text = "币种：" + symbol + "\n" +
+                    "时间线：" + type + "\n" +
+                    "信号：" + sellSign;
+
+            MailUtil.sendMail(subject, text);
+        }
+    }
+
+    private void checkCross(String symbol, String type, List<MACDItem> macdList) {
+        int size = macdList.size();
+
         boolean lowBefore = true;
         boolean lowNow = true;
 
-        MACDItem macdBefore = macdList.get(0);
-        MACDItem macdNow = macdList.get(1);
+        MACDItem macdBefore = macdList.get(size - 2);
+        MACDItem macdNow = macdList.get(size - 1);
 
         if (macdBefore.getDif() > macdBefore.getDea()) {
             lowBefore = false;
@@ -107,11 +150,6 @@ public class ScheduledTasks implements InitializingBean {
                     "信号：" + sellSign;
 
             MailUtil.sendMail(subject, text);
-        }
-
-        mailRecord.add(macdList.toString());
-        if (mailRecord.size() > 100) {
-            mailRecord = mailRecord.subList(90, mailRecord.size());
         }
     }
 }

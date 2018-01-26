@@ -8,13 +8,11 @@ import com.chen.cryptocurrency.service.task.ScheduledTasks;
 import com.chen.cryptocurrency.util.MACDUtil;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
-import javafx.concurrent.Task;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +34,7 @@ public class CoinService {
         return kLineCache.get(symbol, type);
     }
 
-    public List<MACDItem> macd(List<KLineItem> kLineItemList,Integer n) {
+    public List<MACDItem> macd(List<KLineItem> kLineItemList, Integer n) {
         List<Double> list =
                 kLineItemList.stream().map(item -> Double.valueOf(item.getCloseValue())).collect(Collectors.toList());
 
@@ -53,14 +51,18 @@ public class CoinService {
     }
 
     public void addTask(String symbol, String type) {
-        TaskItem taskItem = new TaskItem(symbol,type);
+        TaskItem taskItem = new TaskItem(symbol, type);
         ScheduledTasks.taskItems.add(taskItem);
     }
 
     public void delTask(String symbol, String type) {
-        TaskItem taskItem = new TaskItem(symbol,type);
-
-        ScheduledTasks.taskItems.remove(taskItem);
+        for (TaskItem taskItem :
+                ScheduledTasks.taskItems) {
+            if (taskItem.getSymbol().equalsIgnoreCase(symbol)
+                    && taskItem.getType().equalsIgnoreCase(type)) {
+                ScheduledTasks.taskItems.remove(taskItem);
+            }
+        }
     }
 
     public void mailTest() {
@@ -74,6 +76,6 @@ public class CoinService {
                 "时间线：" + type + "\n" +
                 "信号：" + sellSign;
 
-        MailUtil.sendMail(subject,text);
+        MailUtil.sendMail(subject, text);
     }
 }
