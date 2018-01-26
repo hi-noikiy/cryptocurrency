@@ -73,7 +73,7 @@ public class ScheduledTasks implements InitializingBean {
         }
 
         checkCross(symbol, type, macdList);
-        checkTrendency(symbol, type, macdList);
+        checkTendency(symbol, type, macdList);
 
         mailRecord.add(macdList.toString());
         if (mailRecord.size() > 100) {
@@ -81,7 +81,7 @@ public class ScheduledTasks implements InitializingBean {
         }
     }
 
-    private void checkTrendency(String symbol, String type, List<MACDItem> macdList) {
+    private void checkTendency(String symbol, String type, List<MACDItem> macdList) {
         List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
 
         int size = difList.size();
