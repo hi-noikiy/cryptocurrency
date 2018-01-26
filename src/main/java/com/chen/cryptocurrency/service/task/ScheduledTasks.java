@@ -46,7 +46,7 @@ public class ScheduledTasks implements InitializingBean {
         taskItems.add(new TaskItem("eth_usd", "6hour"));
     }
 
-    @Scheduled(fixedRate = 3 * 60 * 1000)
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void reportCurrentTime() {
         logger.info("开始执行检查！");
         for (TaskItem item :
