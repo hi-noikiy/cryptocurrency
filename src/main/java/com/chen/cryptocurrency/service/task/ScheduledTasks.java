@@ -47,7 +47,7 @@ public class ScheduledTasks implements InitializingBean {
         taskItems.add(new TaskItem("eth_usd", "4hour"));
     }
 
-    @Scheduled(fixedRate = 1 * 60 * 1000)
+    @Scheduled(fixedRate = 3 * 60 * 1000)
     public void reportCurrentTime() {
         logger.info("开始执行检查！");
         for (TaskItem item :
@@ -62,7 +62,7 @@ public class ScheduledTasks implements InitializingBean {
 
 
         List<KLineItem> list = coinService.queryKLine(symbol, type);
-        List<MACDItem> macdList = coinService.macd(list, 5);
+        List<MACDItem> macdList = coinService.macd(list, 2);
 
         for (MACDItem macd :
                 macdList) {
@@ -74,45 +74,33 @@ public class ScheduledTasks implements InitializingBean {
             return;
         }
 
-        MACDItem macd;
         boolean lowBefore = true;
-        boolean highNow = true;
-
-        boolean highBefore = true;
         boolean lowNow = true;
 
-        for (int i = 0; i < 4; i++) {
-            macd = macdList.get(i);
-            if (macd.getDif() > macd.getDea()) {
-                lowBefore = false;
-            }
-            if (macd.getDif() < macd.getDea()) {
-                highBefore = false;
-            }
+        MACDItem macdBefore = macdList.get(0);
+        MACDItem macdNow = macdList.get(1);
+
+        if (macdBefore.getDif() > macdBefore.getDea()) {
+            lowBefore = false;
         }
-        macd = macdList.get(4);
-        if (macd.getDif() < macd.getDea()) {
-            highNow = false;
-        }
-        if (macd.getDif() > macd.getDea()) {
+        if (macdNow.getDif() > macdNow.getDea()) {
             lowNow = false;
         }
-
 
         String buySign = "金叉！";
         String sellSign = "死叉！";
         String text = "注意观察！";
 
-        if (lowBefore && highNow) {
+        if (lowBefore && !lowNow) {
             MailUtil.sendMail(symbol + "_" + type + "_" + buySign, text);
         }
-        if (highBefore && lowNow) {
+        if (!lowBefore && lowNow) {
             MailUtil.sendMail(symbol + "_" + type + "_" + sellSign, text);
         }
 
         mailRecord.add(macdList.toString());
-        if (mailRecord.size() > 10) {
-            mailRecord = mailRecord.subList(9, mailRecord.size());
+        if (mailRecord.size() > 100) {
+            mailRecord = mailRecord.subList(90, mailRecord.size());
         }
     }
 }
