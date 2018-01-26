@@ -59,7 +59,6 @@ public class ScheduledTasks implements InitializingBean {
     private void checkMACD(String symbol, String type) {
         logger.info("检查，币种：{}，时间：{}", symbol, type);
 
-
         List<KLineItem> list = coinService.queryKLine(symbol, type);
         List<MACDItem> macdList = coinService.macd(list, 5);
 
@@ -116,7 +115,6 @@ public class ScheduledTasks implements InitializingBean {
             MailUtil.sendMail(subject, text);
         }
         logger.info("DIF趋势检查完毕");
-
     }
 
     private void checkCross(String symbol, String type, List<MACDItem> macdList) {
