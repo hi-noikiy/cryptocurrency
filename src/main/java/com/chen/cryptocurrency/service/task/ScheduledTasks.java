@@ -87,15 +87,26 @@ public class ScheduledTasks implements InitializingBean {
             lowNow = false;
         }
 
-        String buySign = "金叉！";
-        String sellSign = "死叉！";
-        String text = "注意观察！";
+        String buySign = "呈现金叉";
+        String sellSign = "呈现死叉";
 
         if (lowBefore && !lowNow) {
-            MailUtil.sendMail(symbol + "_" + type + "_" + buySign, text);
+            String subject = "币种" + symbol + buySign;
+
+            String text = "币种：" + symbol + "\n" +
+                    "时间线：" + type + "\n" +
+                    "信号：" + buySign;
+
+            MailUtil.sendMail(subject, text);
         }
         if (!lowBefore && lowNow) {
-            MailUtil.sendMail(symbol + "_" + type + "_" + sellSign, text);
+            String subject = "币种" + symbol + sellSign;
+
+            String text = "币种：" + symbol + "\n" +
+                    "时间线：" + type + "\n" +
+                    "信号：" + sellSign;
+
+            MailUtil.sendMail(subject, text);
         }
 
         mailRecord.add(macdList.toString());

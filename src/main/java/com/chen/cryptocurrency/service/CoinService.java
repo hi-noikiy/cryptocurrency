@@ -6,6 +6,7 @@ import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.service.cache.KLineCache;
 import com.chen.cryptocurrency.service.task.ScheduledTasks;
 import com.chen.cryptocurrency.util.MACDUtil;
+import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import javafx.concurrent.Task;
 import org.springframework.stereotype.Component;
@@ -60,5 +61,19 @@ public class CoinService {
         TaskItem taskItem = new TaskItem(symbol,type);
 
         ScheduledTasks.taskItems.remove(taskItem);
+    }
+
+    public void mailTest() {
+        String symbol = "btc_usd";
+        String type = "1hour";
+        String sellSign = "呈现金叉";
+
+        String subject = "币种" + symbol + sellSign;
+
+        String text = "币种：" + symbol + "\n" +
+                "时间线：" + type + "\n" +
+                "信号：" + sellSign;
+
+        MailUtil.sendMail(subject,text);
     }
 }
