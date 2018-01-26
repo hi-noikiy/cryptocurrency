@@ -38,13 +38,13 @@ public class ScheduledTasks implements InitializingBean {
         if (mailRecord == null) {
             mailRecord = Lists.newArrayList();
         }
-        taskItems.add(new TaskItem("btc_usdt", "2hour"));
-        taskItems.add(new TaskItem("btc_usdt", "4hour"));
-        taskItems.add(new TaskItem("btc_usdt", "6hour"));
+        taskItems.add(new TaskItem("btc", "2hour"));
+        taskItems.add(new TaskItem("btc", "4hour"));
+        taskItems.add(new TaskItem("btc", "6hour"));
 
-        taskItems.add(new TaskItem("eth_usdt", "2hour"));
-        taskItems.add(new TaskItem("eth_usdt", "4hour"));
-        taskItems.add(new TaskItem("eth_usdt", "6hour"));
+        taskItems.add(new TaskItem("eth", "2hour"));
+        taskItems.add(new TaskItem("eth", "4hour"));
+        taskItems.add(new TaskItem("eth", "6hour"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
@@ -52,18 +52,13 @@ public class ScheduledTasks implements InitializingBean {
         logger.info("开始执行检查！");
         for (TaskItem item :
                 taskItems) {
-            checkMACD(item.getSymbol(), item.getType(), Constant.EXCHANGE_OKCOIN);
-            checkMACD(item.getSymbol(), item.getType(), Constant.EXCHANGE_OKEX);
+            checkMACD(item.getSymbol() + "_usd", item.getType(), Constant.EXCHANGE_OKCOIN);
+            checkMACD(item.getSymbol() + "_usdt", item.getType(), Constant.EXCHANGE_OKEX);
         }
         logger.info("检查完毕！");
     }
 
     private void checkMACD(String symbol, String type, String exchange) {
-        if (Constant.EXCHANGE_OKCOIN.equalsIgnoreCase(exchange)) {
-            exchange = Constant.EXCHANGE_OKCOIN;
-        } else {
-            exchange = Constant.EXCHANGE_OKEX;
-        }
         logger.info("检查，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
 
         List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);

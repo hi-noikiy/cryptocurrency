@@ -43,9 +43,4 @@ public class CoinController {
         return coinService.listTask();
     }
 
-    @RequestMapping("/mail/test")
-    String mailTest() {
-        coinService.mailTest();
-        return "ok";
-    }
 }
