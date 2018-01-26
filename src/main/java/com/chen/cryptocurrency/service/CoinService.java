@@ -9,7 +9,6 @@ import com.chen.cryptocurrency.util.MACDUtil;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,14 +23,8 @@ public class CoinService {
     @Resource
     private KLineCache kLineCache;
 
-    public List<KLineItem> queryKLine(String symbol, String type) {
-        if (StringUtils.isEmpty(symbol)) {
-            symbol = "btc_usdt";
-        }
-        if (StringUtils.isEmpty(type)) {
-            type = "2hour";
-        }
-        return kLineCache.get(symbol, type);
+    public List<KLineItem> queryKLine(String symbol, String type, String exchange) {
+        return kLineCache.get(symbol, type, exchange);
     }
 
     public List<MACDItem> macd(List<KLineItem> kLineItemList, Integer n) {
@@ -63,19 +56,5 @@ public class CoinService {
                 ScheduledTasks.taskItems.remove(taskItem);
             }
         }
-    }
-
-    public void mailTest() {
-        String symbol = "btc_usdt";
-        String type = "1hour";
-        String sellSign = "呈现金叉";
-
-        String subject = "币种" + symbol + sellSign;
-
-        String text = "币种：" + symbol + "\n" +
-                "时间线：" + type + "\n" +
-                "信号：" + sellSign;
-
-        MailUtil.sendMail(subject, text);
     }
 }

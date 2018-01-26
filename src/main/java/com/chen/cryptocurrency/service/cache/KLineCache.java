@@ -30,19 +30,19 @@ public class KLineCache {
                 @Override
                 public List<KLineItem> load(String key) {
                     List<String> keyList = Constant.key_splitter.splitToList(key);
-                    return exchangeRemote.kLine(keyList.get(0), keyList.get(1));
+                    return exchangeRemote.kLine(keyList.get(0), keyList.get(1),keyList.get(1));
                 }
             });
 
-    public List<KLineItem> get(String symbol, String type) {
+    public List<KLineItem> get(String symbol, String type, String exchange) {
         try {
-            return cache.get(genKey(symbol, type));
+            return cache.get(genKey(symbol, type, exchange));
         } catch (ExecutionException e) {
-            return exchangeRemote.kLine(symbol, type);
+            return exchangeRemote.kLine(symbol, type, exchange);
         }
     }
 
-    private String genKey(String symbol, String type) {
-        return Constant.key_joiner.join(symbol, type);
+    private String genKey(String symbol, String type, String exchange) {
+        return Constant.key_joiner.join(symbol, type, exchange);
     }
 }

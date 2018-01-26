@@ -4,6 +4,7 @@ import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.service.bean.MACDItem;
 import com.chen.cryptocurrency.service.bean.TaskItem;
+import com.chen.cryptocurrency.util.Constant;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -51,37 +52,43 @@ public class ScheduledTasks implements InitializingBean {
         logger.info("开始执行检查！");
         for (TaskItem item :
                 taskItems) {
-            checkMACD(item.getSymbol(), item.getType());
+            checkMACD(item.getSymbol(), item.getType(), Constant.EXCHANGE_OKCOIN);
+            checkMACD(item.getSymbol(), item.getType(), Constant.EXCHANGE_OKEX);
         }
         logger.info("检查完毕！");
     }
 
-    private void checkMACD(String symbol, String type) {
-        logger.info("检查，币种：{}，时间：{}", symbol, type);
+    private void checkMACD(String symbol, String type, String exchange) {
+        if (Constant.EXCHANGE_OKCOIN.equalsIgnoreCase(exchange)) {
+            exchange = Constant.EXCHANGE_OKCOIN;
+        } else {
+            exchange = Constant.EXCHANGE_OKEX;
+        }
+        logger.info("检查，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
 
-        List<KLineItem> list = coinService.queryKLine(symbol, type);
-        List<MACDItem> macdList = coinService.macd(list, 5);
+        List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
+        List<MACDItem> macdItemList = coinService.macd(kLineItemList, 5);
 
-        for (MACDItem macd : macdList) {
+        for (MACDItem macd : macdItemList) {
             logger.info("结果:{}", macd.toString());
         }
 
-        if (mailRecord.contains(macdList.toString())) {
+        if (mailRecord.contains(macdItemList.toString())) {
             logger.info("结果与上次相同，直接返回");
             return;
         }
 
-        checkCross(symbol, type, macdList);
-        checkTendency(symbol, type, macdList);
+        checkCross(symbol, type, exchange, macdItemList);
+        checkTendency(symbol, type, exchange, macdItemList);
 
-        mailRecord.add(macdList.toString());
+        mailRecord.add(macdItemList.toString());
         if (mailRecord.size() > 100) {
             mailRecord = mailRecord.subList(90, mailRecord.size());
         }
     }
 
-    private void checkTendency(String symbol, String type, List<MACDItem> macdList) {
-        logger.info("开始检查DIF趋势，币种：{}，间隔：{}", symbol, type);
+    private void checkTendency(String symbol, String type, String exchange, List<MACDItem> macdList) {
+        logger.info("开始检查DIF趋势，交易所：{}，币种：{}，间隔：{}", exchange, symbol, type);
 
         List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
 
@@ -95,8 +102,9 @@ public class ScheduledTasks implements InitializingBean {
                 && difList.get(size - 3) < difList.get(size - 4)) {
             logger.info("呈现趋势：{}，发送邮件", buySign);
 
-            String subject = "币种" + symbol + buySign;
-            String text = "币种：" + symbol + "\n" +
+            String subject = "交易所" + exchange + "，币种" + symbol + buySign;
+            String text = "交易所：" + exchange + "\n" +
+                    "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + buySign;
 
@@ -107,8 +115,9 @@ public class ScheduledTasks implements InitializingBean {
                 && difList.get(size - 3) > difList.get(size - 4)) {
             logger.info("呈现趋势：{}，发送邮件", sellSign);
 
-            String subject = "币种" + symbol + sellSign;
-            String text = "币种：" + symbol + "\n" +
+            String subject = "交易所" + exchange + "，币种" + symbol + sellSign;
+            String text = "交易所：" + exchange + "\n" +
+                    "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + sellSign;
 
@@ -117,8 +126,8 @@ public class ScheduledTasks implements InitializingBean {
         logger.info("DIF趋势检查完毕");
     }
 
-    private void checkCross(String symbol, String type, List<MACDItem> macdList) {
-        logger.info("开始检查交叉线，币种：{}，间隔：{}", symbol, type);
+    private void checkCross(String symbol, String type, String exchange, List<MACDItem> macdList) {
+        logger.info("开始检查交叉线，交易所：{}，币种：{}，间隔：{}", exchange, symbol, type);
 
         int size = macdList.size();
 
@@ -141,8 +150,9 @@ public class ScheduledTasks implements InitializingBean {
         if (lowBefore && !lowNow) {
             logger.info("呈现趋势：{}，发送邮件", buySign);
 
-            String subject = "币种" + symbol + buySign;
-            String text = "币种：" + symbol + "\n" +
+            String subject = "交易所" + exchange + "，币种" + symbol + buySign;
+            String text = "交易所：" + exchange + "\n" +
+                    "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + buySign;
 
@@ -152,8 +162,9 @@ public class ScheduledTasks implements InitializingBean {
         if (!lowBefore && lowNow) {
             logger.info("呈现趋势：{}，发送邮件", sellSign);
 
-            String subject = "币种" + symbol + sellSign;
-            String text = "币种：" + symbol + "\n" +
+            String subject = "交易所" + exchange + "，币种" + symbol + sellSign;
+            String text = "交易所：" + exchange + "\n" +
+                    "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + sellSign;
 

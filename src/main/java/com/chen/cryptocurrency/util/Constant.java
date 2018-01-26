@@ -10,4 +10,7 @@ import com.google.common.base.Splitter;
 public class Constant {
     public static Splitter key_splitter = Splitter.on("|");
     public static Joiner key_joiner = Joiner.on("|");
+
+    public static String EXCHANGE_OKEX = "okex";
+    public static String EXCHANGE_OKCOIN = "okcoin";
 }

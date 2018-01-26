@@ -5,7 +5,6 @@ import com.chen.cryptocurrency.util.HttpUtil;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,28 +16,25 @@ import java.util.stream.Collectors;
 @Service
 public class ExchangeRemote {
 
-    @Value("${exchange.domain}")
-    private String domain;
+    @Value("${exchange.okex.domain}")
+    private String okexDomain;
+    @Value("${exchange.okex.api.k}")
+    private String okexApiK;
+    @Value("${exchange.okcoin.domain}")
+    private String okcoinDomain;
+    @Value("${exchange.okcoin.api.k}")
+    private String okcoinApiK;
 
-    @Value("${exchange.api.k}")
-    private String apiK;
-
-    public List<KLineItem> kLine() {
-        return kLine("", "");
-    }
-
-    public List<KLineItem> kLine(String symbol, String type) {
+    public List<KLineItem> kLine(String symbol, String type, String exchange) {
         HttpUtil httpUtil = HttpUtil.getInstance();
-
-        if (StringUtils.isEmpty(symbol)) {
-            symbol = "btc_usdt";
-        }
-        if (StringUtils.isEmpty(type)) {
-            type = "2hour";
-        }
-
         String param = "?symbol=" + symbol + "&type=" + type;
-        String response = httpUtil.requestHttpGet(domain, apiK, param);
+
+        String response;
+        if ("okcoin".equalsIgnoreCase(exchange)) {
+            response = httpUtil.requestHttpGet(okcoinDomain, okcoinApiK, param);
+        } else {
+            response = httpUtil.requestHttpGet(okexDomain, okexApiK, param);
+        }
         Gson gson = new Gson();
         List<List> resList = gson.fromJson(response, List.class);
 
