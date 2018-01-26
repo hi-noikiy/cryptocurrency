@@ -11,10 +11,9 @@ import org.simplejavamail.mailer.Mailer;
 public class MailUtil {
     public static void sendMail(String subject, String text) {
         String username = "xiao1tt";
-        String mailSuf = "@aliyun.com";
-        String password = "shei1086";
+        String mailSuf = "@126.com";
+        String password = "W0SILENT";
 
-        String code = "ovndhguqxhkpbgdi";
         Email email = new EmailBuilder()
                 .from("CoinServer", username+mailSuf)
                 .to("chen", "81773322@qq.com")
@@ -25,7 +24,7 @@ public class MailUtil {
                 .build();
 
 
-        Mailer mailer = new Mailer("smtp.aliyun.com", 25, username+mailSuf, password);
+        Mailer mailer = new Mailer("smtp.126.com", 25, username+mailSuf, password);
         mailer.trustAllSSLHosts(true);
         mailer.sendMail(email);
     }
