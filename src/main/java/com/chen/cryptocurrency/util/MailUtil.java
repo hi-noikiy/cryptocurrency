@@ -28,7 +28,7 @@ public class MailUtil {
     }
 
     public static void main(String[] args) {
-        String symbol = "btc_usd";
+        String symbol = "btc_usdt";
         String type = "1hour";
         String sellSign = "呈现金叉";
 

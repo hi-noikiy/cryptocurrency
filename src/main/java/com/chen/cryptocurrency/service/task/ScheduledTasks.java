@@ -37,13 +37,13 @@ public class ScheduledTasks implements InitializingBean {
         if (mailRecord == null) {
             mailRecord = Lists.newArrayList();
         }
-        taskItems.add(new TaskItem("btc_usd", "2hour"));
-        taskItems.add(new TaskItem("btc_usd", "4hour"));
-        taskItems.add(new TaskItem("btc_usd", "6hour"));
+        taskItems.add(new TaskItem("btc_usdt", "2hour"));
+        taskItems.add(new TaskItem("btc_usdt", "4hour"));
+        taskItems.add(new TaskItem("btc_usdt", "6hour"));
 
-        taskItems.add(new TaskItem("eth_usd", "2hour"));
-        taskItems.add(new TaskItem("eth_usd", "4hour"));
-        taskItems.add(new TaskItem("eth_usd", "6hour"));
+        taskItems.add(new TaskItem("eth_usdt", "2hour"));
+        taskItems.add(new TaskItem("eth_usdt", "4hour"));
+        taskItems.add(new TaskItem("eth_usdt", "6hour"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)

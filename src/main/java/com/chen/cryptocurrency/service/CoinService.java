@@ -26,7 +26,7 @@ public class CoinService {
 
     public List<KLineItem> queryKLine(String symbol, String type) {
         if (StringUtils.isEmpty(symbol)) {
-            symbol = "btc_usd";
+            symbol = "btc_usdt";
         }
         if (StringUtils.isEmpty(type)) {
             type = "2hour";
@@ -66,7 +66,7 @@ public class CoinService {
     }
 
     public void mailTest() {
-        String symbol = "btc_usd";
+        String symbol = "btc_usdt";
         String type = "1hour";
         String sellSign = "呈现金叉";
 

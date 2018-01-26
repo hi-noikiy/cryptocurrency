@@ -31,7 +31,7 @@ public class ExchangeRemote {
         HttpUtil httpUtil = HttpUtil.getInstance();
 
         if (StringUtils.isEmpty(symbol)) {
-            symbol = "btc_usd";
+            symbol = "btc_usdt";
         }
         if (StringUtils.isEmpty(type)) {
             type = "2hour";
