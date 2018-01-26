@@ -30,7 +30,7 @@ public class KLineCache {
                 @Override
                 public List<KLineItem> load(String key) {
                     List<String> keyList = Constant.key_splitter.splitToList(key);
-                    return exchangeRemote.kLine(keyList.get(0), keyList.get(1),keyList.get(1));
+                    return exchangeRemote.kLine(keyList.get(0), keyList.get(1), keyList.get(2));
                 }
             });
 
