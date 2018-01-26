@@ -81,7 +81,7 @@ public class ScheduledTasks implements InitializingBean {
         checkCross(symbol, type, exchange, macdItemList);
         checkTendency(symbol, type, exchange, macdItemList);
 
-        mailRecord.add(macdItemList.toString());
+        mailRecord.add(macdItemList.get(0).toString());
         if (mailRecord.size() > 100) {
             mailRecord = mailRecord.subList(90, mailRecord.size());
         }
