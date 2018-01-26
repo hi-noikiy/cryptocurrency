@@ -7,14 +7,17 @@ import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.util.Constant;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +31,7 @@ public class ScheduledTasks implements InitializingBean {
     private CoinService coinService;
 
     public static List<TaskItem> taskItems;
-    private static List<String> mailRecord;
+    private static Set<String> mailRecord;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -36,7 +39,7 @@ public class ScheduledTasks implements InitializingBean {
             taskItems = Lists.newArrayList();
         }
         if (mailRecord == null) {
-            mailRecord = Lists.newArrayList();
+            mailRecord = Sets.newConcurrentHashSet();
         }
         taskItems.add(new TaskItem("btc", "2hour"));
         taskItems.add(new TaskItem("btc", "4hour"));
@@ -49,6 +52,9 @@ public class ScheduledTasks implements InitializingBean {
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void reportCurrentTime() {
+        if (mailRecord.size() > 100) {
+            mailRecord.clear();
+        }
         logger.info("开始执行检查！");
         for (TaskItem item :
                 taskItems) {
@@ -64,22 +70,17 @@ public class ScheduledTasks implements InitializingBean {
         List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
         List<MACDItem> macdItemList = coinService.macd(kLineItemList, 5);
 
+        if (mailRecord.contains(macdItemList.get(0).toString())) {
+            logger.info("已发送过邮件，直接返回");
+            return;
+        }
+
         for (MACDItem macd : macdItemList) {
             logger.info("结果:{}", macd.toString());
         }
 
-        if (mailRecord.contains(macdItemList.toString())) {
-            logger.info("结果与上次相同，直接返回");
-            return;
-        }
-
         checkCross(symbol, type, exchange, macdItemList);
         checkTendency(symbol, type, exchange, macdItemList);
-
-        mailRecord.add(macdItemList.get(0).toString());
-        if (mailRecord.size() > 100) {
-            mailRecord = mailRecord.subList(90, mailRecord.size());
-        }
     }
 
     private void checkTendency(String symbol, String type, String exchange, List<MACDItem> macdList) {
@@ -89,36 +90,25 @@ public class ScheduledTasks implements InitializingBean {
 
         int size = difList.size();
 
-        String buySign = "转折向上，请注意";
-        String sellSign = "转折向下，请注意";
+        String sign = "";
 
         if (difList.get(size - 1) > difList.get(size - 2)
                 && difList.get(size - 2) > difList.get(size - 3)
                 && difList.get(size - 3) < difList.get(size - 4)) {
-            logger.info("呈现趋势：{}，发送邮件", buySign);
-
-            String subject = "交易所" + exchange + "，币种" + symbol + buySign;
-            String text = "交易所：" + exchange + "\n" +
-                    "币种：" + symbol + "\n" +
-                    "时间线：" + type + "\n" +
-                    "信号：" + buySign;
-
-            MailUtil.sendMail(subject, text);
+            sign = "转折向上，请注意";
         }
         if (difList.get(size - 1) < difList.get(size - 2)
                 && difList.get(size - 2) < difList.get(size - 3)
                 && difList.get(size - 3) > difList.get(size - 4)) {
-            logger.info("呈现趋势：{}，发送邮件", sellSign);
+            sign = "转折向下，请注意";
+        }
 
-            String subject = "交易所" + exchange + "，币种" + symbol + sellSign;
-            String text = "交易所：" + exchange + "\n" +
-                    "币种：" + symbol + "\n" +
-                    "时间线：" + type + "\n" +
-                    "信号：" + sellSign;
-
-            MailUtil.sendMail(subject, text);
+        if (!StringUtils.isEmpty(sign)) {
+            sendMail(sign, exchange, symbol, type);
+            addRecord(macdList.get(0).toString());
         }
         logger.info("DIF趋势检查完毕");
+
     }
 
     private void checkCross(String symbol, String type, String exchange, List<MACDItem> macdList) {
@@ -139,32 +129,36 @@ public class ScheduledTasks implements InitializingBean {
             lowNow = false;
         }
 
-        String buySign = "呈现金叉";
-        String sellSign = "呈现死叉";
+        String sign = "";
 
         if (lowBefore && !lowNow) {
-            logger.info("呈现趋势：{}，发送邮件", buySign);
-
-            String subject = "交易所" + exchange + "，币种" + symbol + buySign;
-            String text = "交易所：" + exchange + "\n" +
-                    "币种：" + symbol + "\n" +
-                    "时间线：" + type + "\n" +
-                    "信号：" + buySign;
-
-            MailUtil.sendMail(subject, text);
+            sign = "呈现金叉";
         }
 
         if (!lowBefore && lowNow) {
-            logger.info("呈现趋势：{}，发送邮件", sellSign);
-
-            String subject = "交易所" + exchange + "，币种" + symbol + sellSign;
-            String text = "交易所：" + exchange + "\n" +
-                    "币种：" + symbol + "\n" +
-                    "时间线：" + type + "\n" +
-                    "信号：" + sellSign;
-
-            MailUtil.sendMail(subject, text);
+            sign = "呈现死叉";
+        }
+        if (!StringUtils.isEmpty(sign)) {
+            sendMail(sign, exchange, symbol, type);
+            addRecord(macdList.get(0).toString());
         }
         logger.info("交叉线检查完毕");
+    }
+
+    private void sendMail(String sign, String exchange, String symbol, String type) {
+        logger.info("呈现趋势：{}，发送邮件", sign);
+
+        String subject = "交易所" + exchange + "，币种" + symbol + sign;
+        String text = "交易所：" + exchange + "\n" +
+                "币种：" + symbol + "\n" +
+                "时间线：" + type + "\n" +
+                "信号：" + sign;
+
+        MailUtil.sendMail(subject, text);
+    }
+    private void addRecord(String record) {
+        if (!mailRecord.contains(record)) {
+            mailRecord.add(record);
+        }
     }
 }
