@@ -82,6 +82,8 @@ public class ScheduledTasks implements InitializingBean {
     }
 
     private void checkTendency(String symbol, String type, List<MACDItem> macdList) {
+        logger.info("开始检查DIF趋势，币种：{}，间隔：{}", symbol, type);
+
         List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
 
         int size = difList.size();
@@ -92,29 +94,34 @@ public class ScheduledTasks implements InitializingBean {
         if (difList.get(size - 1) > difList.get(size - 2)
                 && difList.get(size - 2) > difList.get(size - 3)
                 && difList.get(size - 3) < difList.get(size - 4)) {
-            String subject = "币种" + symbol + buySign;
+            logger.info("呈现趋势：{}，发送邮件", buySign);
 
+            String subject = "币种" + symbol + buySign;
             String text = "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + buySign;
 
             MailUtil.sendMail(subject, text);
         }
-
         if (difList.get(size - 1) < difList.get(size - 2)
                 && difList.get(size - 2) < difList.get(size - 3)
                 && difList.get(size - 3) > difList.get(size - 4)) {
-            String subject = "币种" + symbol + sellSign;
+            logger.info("呈现趋势：{}，发送邮件", sellSign);
 
+            String subject = "币种" + symbol + sellSign;
             String text = "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + sellSign;
 
             MailUtil.sendMail(subject, text);
         }
+        logger.info("DIF趋势检查完毕");
+
     }
 
     private void checkCross(String symbol, String type, List<MACDItem> macdList) {
+        logger.info("开始检查交叉线，币种：{}，间隔：{}", symbol, type);
+
         int size = macdList.size();
 
         boolean lowBefore = true;
@@ -134,22 +141,26 @@ public class ScheduledTasks implements InitializingBean {
         String sellSign = "呈现死叉";
 
         if (lowBefore && !lowNow) {
-            String subject = "币种" + symbol + buySign;
+            logger.info("呈现趋势：{}，发送邮件", buySign);
 
+            String subject = "币种" + symbol + buySign;
             String text = "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + buySign;
 
             MailUtil.sendMail(subject, text);
         }
-        if (!lowBefore && lowNow) {
-            String subject = "币种" + symbol + sellSign;
 
+        if (!lowBefore && lowNow) {
+            logger.info("呈现趋势：{}，发送邮件", sellSign);
+
+            String subject = "币种" + symbol + sellSign;
             String text = "币种：" + symbol + "\n" +
                     "时间线：" + type + "\n" +
                     "信号：" + sellSign;
 
             MailUtil.sendMail(subject, text);
         }
+        logger.info("交叉线检查完毕");
     }
 }
