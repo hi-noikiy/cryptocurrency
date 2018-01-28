@@ -5,8 +5,7 @@ import com.chen.cryptocurrency.service.bean.MACDItem;
 import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.service.cache.KLineCache;
 import com.chen.cryptocurrency.service.task.ScheduledTasks;
-import com.chen.cryptocurrency.util.MACDUtil;
-import com.chen.cryptocurrency.util.MailUtil;
+import com.chen.cryptocurrency.util.IndexUtil;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
 
@@ -34,26 +33,26 @@ public class CoinService {
         List<MACDItem> result = Lists.newArrayList();
         for (int i = n; i >= 0; i--) {
             List<Double> temp = list.subList(0, list.size() - i);
-            result.add(MACDUtil.getMACD(temp, 12, 26, 9));
+            result.add(IndexUtil.getMACD(temp, 12, 26, 9));
         }
         return result;
     }
 
     public List<TaskItem> listTask() {
-        return ScheduledTasks.taskItems;
+        return ScheduledTasks.macdTaskItems;
     }
 
     public void addTask(String symbol, String type) {
         TaskItem taskItem = new TaskItem(symbol, type);
-        ScheduledTasks.taskItems.add(taskItem);
+        ScheduledTasks.macdTaskItems.add(taskItem);
     }
 
     public void delTask(String symbol, String type) {
         for (TaskItem taskItem :
-                ScheduledTasks.taskItems) {
+                ScheduledTasks.macdTaskItems) {
             if (taskItem.getSymbol().equalsIgnoreCase(symbol)
                     && taskItem.getType().equalsIgnoreCase(type)) {
-                ScheduledTasks.taskItems.remove(taskItem);
+                ScheduledTasks.macdTaskItems.remove(taskItem);
             }
         }
     }

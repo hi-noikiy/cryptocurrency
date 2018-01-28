@@ -1,10 +1,9 @@
 package com.chen.cryptocurrency.service.task;
 
 import com.chen.cryptocurrency.service.CoinService;
-import com.chen.cryptocurrency.service.bean.KLineItem;
-import com.chen.cryptocurrency.service.bean.MACDItem;
-import com.chen.cryptocurrency.service.bean.TaskItem;
+import com.chen.cryptocurrency.service.bean.*;
 import com.chen.cryptocurrency.util.Constant;
+import com.chen.cryptocurrency.util.IndexUtil;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,25 +29,20 @@ public class ScheduledTasks implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private CoinService coinService;
+    public static List<TaskItem> macdTaskItems = Lists.newArrayList();
+    public static List<TaskItem> psyTaskItems = Lists.newArrayList();
 
-    public static List<TaskItem> taskItems;
-    private static Set<String> mailRecord;
+    private static Set<String> mailRecord = Sets.newConcurrentHashSet();
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (taskItems == null) {
-            taskItems = Lists.newArrayList();
-        }
-        if (mailRecord == null) {
-            mailRecord = Sets.newConcurrentHashSet();
-        }
-        taskItems.add(new TaskItem("btc", "2hour"));
-        taskItems.add(new TaskItem("btc", "4hour"));
-        taskItems.add(new TaskItem("btc", "6hour"));
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
 
-        taskItems.add(new TaskItem("eth", "2hour"));
-        taskItems.add(new TaskItem("eth", "4hour"));
-        taskItems.add(new TaskItem("eth", "6hour"));
+        psyTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
+        psyTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
@@ -56,16 +51,42 @@ public class ScheduledTasks implements InitializingBean {
             mailRecord.clear();
         }
         logger.info("开始执行检查！");
-        for (TaskItem item :
-                taskItems) {
-            checkMACD(item.getSymbol() + "_usd", item.getType(), Constant.EXCHANGE_OKCOIN);
-            checkMACD(item.getSymbol() + "_usdt", item.getType(), Constant.EXCHANGE_OKEX);
+        for (TaskItem item : macdTaskItems) {
+            checkMACD(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
+            checkMACD(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
+        }
+
+        for (TaskItem item : psyTaskItems) {
+            checkPSY(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
+            checkPSY(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
         }
         logger.info("检查完毕！");
     }
 
+    private void checkPSY(String symbol, String type, String exchange) {
+        logger.info("检查PSY，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
+
+        String recordKey = Constant.key_joiner.join(symbol, type, exchange, LocalDate.now().toString());
+
+        if (!mailRecord.contains(recordKey)) {
+            double psySign = 0.4;
+            List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
+            double psy = IndexUtil.getPSY(kLineItemList);
+
+            String sign = "PSY 正常";
+            if (psy < psySign) {
+                sign = "PSY 很低，请检查 PSY";
+            }
+            sendMail(sign, exchange, symbol, type);
+            mailRecord.add(recordKey);
+        } else {
+            logger.info("今天已经检查过 PSY");
+        }
+        logger.info("PSY 检查完毕");
+    }
+
     private void checkMACD(String symbol, String type, String exchange) {
-        logger.info("检查，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
+        logger.info("检查 MACD，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
 
         List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
         List<MACDItem> macdItemList = coinService.macd(kLineItemList, 5);
@@ -76,7 +97,7 @@ public class ScheduledTasks implements InitializingBean {
         }
 
         for (MACDItem macd : macdItemList) {
-            logger.info("结果:{}", macd.toString());
+            logger.info("MACD 检查结果:{}", macd.toString());
         }
 
         checkCross(symbol, type, exchange, macdItemList);
@@ -84,7 +105,7 @@ public class ScheduledTasks implements InitializingBean {
     }
 
     private void checkTendency(String symbol, String type, String exchange, List<MACDItem> macdList) {
-        logger.info("开始检查DIF趋势，交易所：{}，币种：{}，间隔：{}", exchange, symbol, type);
+        logger.info("开始检查 DIF 趋势，交易所：{}，币种：{}，间隔：{}", exchange, symbol, type);
 
         List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
 
@@ -107,8 +128,7 @@ public class ScheduledTasks implements InitializingBean {
             sendMail(sign, exchange, symbol, type);
             addRecord(macdList.get(0).toString());
         }
-        logger.info("DIF趋势检查完毕");
-
+        logger.info("DIF 趋势检查完毕");
     }
 
     private void checkCross(String symbol, String type, String exchange, List<MACDItem> macdList) {
@@ -156,9 +176,20 @@ public class ScheduledTasks implements InitializingBean {
 
         MailUtil.sendMail(subject, text);
     }
+
     private void addRecord(String record) {
         if (!mailRecord.contains(record)) {
             mailRecord.add(record);
         }
+    }
+
+    public static void main(String[] args) {
+        LocalDate date = LocalDate.now().minusDays(1);
+        List<String> list = Lists.newArrayList();
+        for (int i = 0; i < 36; i++) {
+            list.add("\"" + date.toString() + "\"");
+            date = date.minusDays(1);
+        }
+        System.out.println(list);
     }
 }
