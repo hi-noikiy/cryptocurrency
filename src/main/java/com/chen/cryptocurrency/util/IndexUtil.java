@@ -19,7 +19,7 @@ public class IndexUtil {
      * @param list :Price list to calculate，the first at head, the last at tail.
      * @return
      */
-    public static final Double getEXPMA(final List<Double> list, final int number) {
+    public static final Double culEXPMA(final List<Double> list, final int number) {
         // 开始计算EMA值，
         Double k = 2.0 / (number + 1.0);// 计算出序数
         Double ema = list.get(0);// 第一天ema等于当天收盘价
@@ -39,7 +39,7 @@ public class IndexUtil {
      * @param midPeriod   :the mid period value.
      * @return
      */
-    public static final MACDItem getMACD(final List<Double> list, final int shortPeriod, final int longPeriod, int midPeriod) {
+    public static final MACDItem culMACD(final List<Double> list, final int shortPeriod, final int longPeriod, int midPeriod) {
         List<Double> diffList = new ArrayList<Double>();
         Double shortEMA;
         Double longEMA;
@@ -48,12 +48,12 @@ public class IndexUtil {
 
         for (int i = list.size() - 1; i >= 0; i--) {
             List<Double> sublist = list.subList(0, list.size() - i);
-            shortEMA = IndexUtil.getEXPMA(sublist, shortPeriod);
-            longEMA = IndexUtil.getEXPMA(sublist, longPeriod);
+            shortEMA = IndexUtil.culEXPMA(sublist, shortPeriod);
+            longEMA = IndexUtil.culEXPMA(sublist, longPeriod);
             dif = shortEMA - longEMA;
             diffList.add(dif);
         }
-        dea = IndexUtil.getEXPMA(diffList, midPeriod);
+        dea = IndexUtil.culEXPMA(diffList, midPeriod);
         MACDItem item = new MACDItem();
         item.setDea(dea);
         item.setDif(dif);
@@ -61,7 +61,7 @@ public class IndexUtil {
         return item;
     }
 
-    public static List<Double> getVR(List<CoinDataItem> coinDataList) {
+    public static List<Double> culVR(List<CoinDataItem> coinDataList) {
         List<Double> result = Lists.newArrayList();
 
         for (int i = coinDataList.size() - 1; i > 24; i--) {
@@ -84,7 +84,7 @@ public class IndexUtil {
         return result;
     }
 
-    public static double getPSY(List<KLineItem> kLineItemList) {
+    public static double culPSY(List<KLineItem> kLineItemList) {
         double day = 12;
         double upDay = 0;
 
