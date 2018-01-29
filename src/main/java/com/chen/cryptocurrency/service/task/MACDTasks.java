@@ -34,19 +34,23 @@ public class MACDTasks implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
+
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
+
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "1day"));
+
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "1day"));
+
         taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "1day"));
     }
 
     @Scheduled(fixedRate = 30 * 60 * 1000)
     public void reportCurrentTime() {
-        if (mailRecord.size() > 60) {
+        if (mailRecord.size() > 200) {
             mailRecord.clear();
         }
         logger.info("开始执行检查！");

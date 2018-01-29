@@ -45,7 +45,7 @@ public class PSYTasks implements InitializingBean {
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void reportCurrentTime() {
-        if (mailRecord.size() > 10) {
+        if (mailRecord.size() > 100) {
             mailRecord.clear();
         }
         logger.info("开始执行检查！");
