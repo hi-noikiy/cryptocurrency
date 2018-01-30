@@ -30,7 +30,7 @@ public class PSYTasks implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private CoinService coinService;
-    public static List<TaskItem> taskItems = Lists.newArrayList();
+    private static List<TaskItem> taskItems = Lists.newArrayList();
 
     private static Set<String> mailRecord = Sets.newConcurrentHashSet();
 
@@ -51,6 +51,7 @@ public class PSYTasks implements InitializingBean {
         logger.info("开始执行检查！");
 
         for (TaskItem item : taskItems) {
+            checkPSY(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
             checkPSY(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
         }
         logger.info("检查完毕！");
@@ -59,7 +60,13 @@ public class PSYTasks implements InitializingBean {
     private void checkPSY(String symbol, String type, String exchange) {
         logger.info("检查PSY，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
 
-        List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
+        List<KLineItem> kLineItemList;
+        try {
+            kLineItemList = coinService.queryKLine(symbol, type, exchange);
+        } catch (Exception e) {
+            logger.error("查询出错，symbol:{}，type:{}，exchange:{}", symbol, type, exchange);
+            return;
+        }
         double psy = IndexUtil.culPSY(kLineItemList);
 
         String recordKey = Constant.key_joiner.join(symbol, type, exchange, LocalDate.now().toString(), psy);

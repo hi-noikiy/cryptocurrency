@@ -64,8 +64,13 @@ public class MACDTasks implements InitializingBean {
 
     private void checkMACD(String symbol, String type, String exchange) {
         logger.info("检查 MACD，交易所：{}，币种：{}，时间：{}", exchange, symbol, type);
-
-        List<KLineItem> kLineItemList = coinService.queryKLine(symbol, type, exchange);
+        List<KLineItem> kLineItemList;
+        try {
+            kLineItemList = coinService.queryKLine(symbol, type, exchange);
+        } catch (Exception e) {
+            logger.error("查询出错，symbol:{}，type:{}，exchange:{}", symbol, type, exchange);
+            return;
+        }
         List<MACDItem> macdItemList = coinService.macd(kLineItemList, 5);
 
         if (mailRecord.contains(macdItemList.get(0).toString())) {
