@@ -51,7 +51,6 @@ public class PSYTasks implements InitializingBean {
         logger.info("开始执行检查！");
 
         for (TaskItem item : taskItems) {
-            checkPSY(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
             checkPSY(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
         }
         logger.info("检查完毕！");
