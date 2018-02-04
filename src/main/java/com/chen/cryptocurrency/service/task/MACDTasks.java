@@ -58,9 +58,9 @@ public class MACDTasks implements InitializingBean {
         taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "1day"));
     }
 
-    @Scheduled(fixedRate = 30 * 60 * 1000)
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void reportCurrentTime() {
-        if (mailRecord.size() > 200) {
+        if (mailRecord.size() > 1000) {
             mailRecord.clear();
         }
         logger.info("开始执行检查！");
