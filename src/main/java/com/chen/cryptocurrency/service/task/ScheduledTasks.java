@@ -35,14 +35,18 @@ public class ScheduledTasks implements InitializingBean {
     private static Set<String> mailRecord = Sets.newConcurrentHashSet();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
-        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
-        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
-        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
+    public void afterPropertiesSet() {
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "4hour"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "4hour"));
 
-        psyTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
-        psyTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "6hour"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "6hour"));
+
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
+
+        macdTaskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
+        macdTaskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
@@ -168,7 +172,7 @@ public class ScheduledTasks implements InitializingBean {
     private void sendMail(String sign, String exchange, String symbol, String type) {
         logger.info("呈现趋势：{}，发送邮件", sign);
 
-        String subject = "交易所" + exchange + "，币种" + symbol + sign;
+        String subject = "交易所" + exchange + "，币种" + symbol +"，趋势为"+ sign;
         String text = "交易所：" + exchange + "\n" +
                 "币种：" + symbol + "\n" +
                 "时间线：" + type + "\n" +
