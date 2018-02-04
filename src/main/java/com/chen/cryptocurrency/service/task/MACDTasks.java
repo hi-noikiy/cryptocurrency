@@ -31,19 +31,29 @@ public class MACDTasks implements InitializingBean {
     private static Set<String> mailRecord = Sets.newConcurrentHashSet();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
+        taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
 
+        taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
 
+        taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "1day"));
 
+        taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "1day"));
 
+        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "1day"));
     }
@@ -150,7 +160,7 @@ public class MACDTasks implements InitializingBean {
     private void sendMail(String sign, String exchange, String symbol, String type) {
         logger.info("呈现趋势：{}，发送邮件", sign);
 
-        String subject = "交易所" + exchange + "，币种" + symbol + sign;
+        String subject = "交易所" + exchange + "，币种" + symbol +"，信号为"+ sign;
         String text = "交易所：" + exchange + "\n" +
                 "币种：" + symbol + "\n" +
                 "时间线：" + type + "\n" +
