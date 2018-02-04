@@ -32,30 +32,40 @@ public class MACDTasks implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
 
-        taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
 
-        taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "1day"));
 
-        taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "4hour"));
+        taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "12hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "1day"));
 
-        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "4hour"));
-        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "6hour"));
-        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.QTUM.getSymbol(), "1day"));
+        taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "2hour"));
+        taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "6hour"));
+        taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "12hour"));
+        taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "1day"));
+
+        taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "2hour"));
+        taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "6hour"));
+        taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "12hour"));
+        taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "1day"));
+
+        taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "2hour"));
+        taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "6hour"));
+        taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "12hour"));
+        taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "1day"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)

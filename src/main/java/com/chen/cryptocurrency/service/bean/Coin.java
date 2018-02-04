@@ -6,6 +6,9 @@ public enum Coin {
     EOS("eos","eos"),
     NEO("neo","neo"),
     QTUM("qtum","qtum"),
+    NAS("nas","nas"),
+    RDN("rdn","rdn"),
+    ZEC("zec","zec"),
     ;
 
     String exchangeName;
