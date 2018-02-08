@@ -35,42 +35,35 @@ public class MACDTasks implements InitializingBean {
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.BTC.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.ETH.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.EOS.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.NEO.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.NAS.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.RDN.getSymbol(), "1day"));
 
         taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "2hour"));
         taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "6hour"));
         taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "12hour"));
-        taskItems.add(new TaskItem(Coin.ZEC.getSymbol(), "1day"));
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void reportCurrentTime() {
-        if (mailRecord.size() > 1000) {
+        if (mailRecord.size() > 200) {
             mailRecord.clear();
         }
         logger.info("开始执行检查！");
@@ -170,7 +163,7 @@ public class MACDTasks implements InitializingBean {
     private void sendMail(String sign, String exchange, String symbol, String type) {
         logger.info("呈现趋势：{}，发送邮件", sign);
 
-        String subject = "交易所" + exchange + "，币种" + symbol +"，信号为"+ sign;
+        String subject = "交易所" + exchange + "，币种" + symbol + "，信号为" + sign;
         String text = "交易所：" + exchange + "\n" +
                 "币种：" + symbol + "\n" +
                 "时间线：" + type + "\n" +
