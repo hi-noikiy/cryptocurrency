@@ -76,4 +76,16 @@ public class KLineItem {
     public void setTradeVolume(String tradeVolume) {
         this.tradeVolume = tradeVolume;
     }
+
+    @Override
+    public String toString() {
+        return "KLineItem{" +
+                "timeStamp=" + timeStamp +
+                ", openValue='" + openValue + '\'' +
+                ", highValue='" + highValue + '\'' +
+                ", lowValue='" + lowValue + '\'' +
+                ", closeValue='" + closeValue + '\'' +
+                ", tradeVolume='" + tradeVolume + '\'' +
+                '}';
+    }
 }

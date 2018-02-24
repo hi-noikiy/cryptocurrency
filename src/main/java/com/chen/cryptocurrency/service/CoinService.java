@@ -4,7 +4,7 @@ import com.chen.cryptocurrency.remote.ExchangeRemote;
 import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.service.bean.MACDItem;
 import com.chen.cryptocurrency.service.bean.TaskItem;
-import com.chen.cryptocurrency.service.task.MACDTasks;
+import com.chen.cryptocurrency.service.task.MacdCheckTasks;
 import com.chen.cryptocurrency.util.IndexUtil;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
@@ -39,20 +39,20 @@ public class CoinService {
     }
 
     public List<TaskItem> listTask() {
-        return MACDTasks.taskItems;
+        return MacdCheckTasks.taskItems;
     }
 
     public void addTask(String symbol, String type) {
         TaskItem taskItem = new TaskItem(symbol, type);
-        MACDTasks.taskItems.add(taskItem);
+        MacdCheckTasks.taskItems.add(taskItem);
     }
 
     public void delTask(String symbol, String type) {
         for (TaskItem taskItem :
-                MACDTasks.taskItems) {
+                MacdCheckTasks.taskItems) {
             if (taskItem.getSymbol().equalsIgnoreCase(symbol)
                     && taskItem.getType().equalsIgnoreCase(type)) {
-                MACDTasks.taskItems.remove(taskItem);
+                MacdCheckTasks.taskItems.remove(taskItem);
             }
         }
     }

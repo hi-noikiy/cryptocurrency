@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * @date 2018/1/25
  */
 @Component
-public class MACDTasks implements InitializingBean {
+public class MacdCheckTasks implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private CoinService coinService;

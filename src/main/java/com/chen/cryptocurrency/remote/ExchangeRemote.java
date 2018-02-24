@@ -4,10 +4,18 @@ import com.chen.cryptocurrency.service.bean.CoinDataGet;
 import com.chen.cryptocurrency.service.bean.CoinDataItem;
 import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.util.HttpUtil;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -49,6 +57,50 @@ public class ExchangeRemote {
         return resList.stream()
                 .map(KLineItem::of)
                 .collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        HttpUtil httpUtil = HttpUtil.getInstance();
+        List<String> types = Lists.newArrayList("1hour", "2hour", "4hour", "6hour", "12hour");
+        String okexDomain = "https://www.okex.com";
+        String okexApiK = "/api/v1/kline.do";
+
+        String symbol = "neo_usdt";
+
+        for (String type :
+                types) {
+            String param = "?symbol=" + symbol + "&type=" + type;
+            String response;
+            response = httpUtil.requestHttpGet(okexDomain, okexApiK, param);
+            Gson gson = new Gson();
+            List<List> resList = gson.fromJson(response, List.class);
+
+            List<KLineItem> result = resList.stream()
+                    .map(KLineItem::of)
+                    .collect(Collectors.toList());
+
+
+            File file = new File("/Users/chenxiaotong/IdeaProjects/self/cryptocurrency/src/main/resources/neo_" + type + ".csv");
+
+            try (BufferedWriter writer = Files.newWriter(file, Charset.forName("utf-8"))) {
+                DecimalFormat df = new DecimalFormat("########");
+
+                writer.write("timestamp,price,amount");
+                writer.write("\n");
+
+                result.forEach(kLineItem -> {
+                    String line = df.format(kLineItem.getTimeStamp() / 1000) + "," + kLineItem.getCloseValue() + "," + kLineItem.getTradeVolume();
+                    try {
+                        writer.write(line);
+                        writer.write("\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<CoinDataItem> coinData(String coinDataName) {
