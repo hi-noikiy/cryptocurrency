@@ -26,7 +26,7 @@ public class BotTasks {
     @Resource
     private CoinService coinService;
 
-    @Scheduled(cron = "0 1 0/1 * * ? ")
+    @Scheduled(cron = "0 1 0/2 * * ? ")
     public void checkTask() {
         logger.info("check task begin !");
         try {
