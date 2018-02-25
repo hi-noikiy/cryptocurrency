@@ -41,4 +41,13 @@ public class TradeStatus {
     public int buyTotal() {
         return btcStatus + eosStatus + neoStatus;
     }
+
+    @Override
+    public String toString() {
+        return "TradeStatus{" +
+                "btcStatus=" + btcStatus +
+                ", eosStatus=" + eosStatus +
+                ", neoStatus=" + neoStatus +
+                '}';
+    }
 }

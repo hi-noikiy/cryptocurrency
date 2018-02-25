@@ -1,6 +1,9 @@
 package com.chen.cryptocurrency.controller;
 
+import com.chen.cryptocurrency.remote.ExchangeRemote;
 import com.chen.cryptocurrency.service.CoinService;
+import com.chen.cryptocurrency.service.bean.CheckResult;
+import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.util.BotUtil;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,6 +25,8 @@ import java.util.List;
 public class CoinController {
     @Resource
     private CoinService coinService;
+    @Resource
+    private ExchangeRemote exchangeRemote;
 
     @RequestMapping("/test/check")
     String check() {
@@ -33,6 +38,22 @@ public class CoinController {
     String trade(@RequestParam String price, @RequestParam String amount) {
         coinService.trade("btc_usdt", "sell", price, amount);
         return "ok";
+    }
+
+    @RequestMapping("/test/trade/task")
+    String tradeTask() {
+        CheckResult btcCheckResult = BotUtil.check("btc.csv", 34);
+
+        exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "sell", btcCheckResult.getPrice().multipliedBy(2).toString(), exchangeRemote.getTradeAmount("btc"));
+        return "ok";
+    }
+
+    @RequestMapping("/test/status")
+    String status() {
+        String result = ("ACCOUNT_STATUS : " + ExchangeRemote.ACCOUNT_STATUS.toString());
+        result += "\n";
+        result += ("TRADE_STATUS" + ExchangeRemote.TRADE_STATUS);
+        return result;
     }
 
     @RequestMapping("/task/add")
