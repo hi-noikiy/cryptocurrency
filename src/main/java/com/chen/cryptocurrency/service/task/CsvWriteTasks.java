@@ -18,7 +18,7 @@ public class CsvWriteTasks {
     @Resource
     private CoinService coinService;
 
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void writeTask() {
         logger.info("write task begin !");
         coinService.csvSync();
