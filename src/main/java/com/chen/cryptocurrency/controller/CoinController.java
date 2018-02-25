@@ -24,8 +24,14 @@ public class CoinController {
     private CoinService coinService;
 
     @RequestMapping("/test/check")
-    String add() {
+    String check() {
         BotUtil.check("btc.csv", 34);
+        return "ok";
+    }
+
+    @RequestMapping("/test/trade")
+    String trade(@RequestParam String price, @RequestParam String amount) {
+        coinService.trade("btc_usdt", "sell", price, amount);
         return "ok";
     }
 

@@ -10,9 +10,7 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,13 +28,17 @@ public class BotUtil {
      */
     public static TimeSeries loadCSV(String fileName) {
         // Reading all lines of the CSV file
-        InputStream stream = BotUtil.class.getClassLoader().getResourceAsStream(fileName);
+        InputStream stream;
         CSVReader csvReader = null;
         List<String[]> lines = null;
         try {
+            stream = new FileInputStream(new File(fileName));
             csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',');
             lines = csvReader.readAll();
-            lines.remove(0); // Removing header line
+            // Removing header line
+            lines.remove(0);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException ioe) {
             logger.error("Unable to load trades from CSV", ioe);
         } finally {
@@ -109,6 +111,7 @@ public class BotUtil {
         }
         return checkResult;
     }
+
     /**
      * Builds a list of populated bars from csv data.
      *

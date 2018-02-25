@@ -78,6 +78,9 @@ public class CoinService {
         logger.info("csv sync , neo last line :");
         logger.info("last 2:{}",neoLine.get(neoLine.size()-2));
         logger.info("last 1:{}",neoLine.get(neoLine.size()-1));
+    }
 
+    public void trade(String symbol, String type, String price, String amount) {
+        exchangeRemote.trade(symbol, type, price, amount);
     }
 }
