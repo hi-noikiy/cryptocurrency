@@ -43,7 +43,7 @@ public class MacdCheckTasks implements InitializingBean {
     }
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
-    public void reportCurrentTime() {
+    public void checkTask() {
         if (mailRecord.size() > 200) {
             mailRecord.clear();
         }
@@ -77,34 +77,6 @@ public class MacdCheckTasks implements InitializingBean {
         }
 
         checkCross(symbol, type, exchange, macdItemList);
-//        checkTendency(symbol, type, exchange, macdItemList);
-    }
-
-    private void checkTendency(String symbol, String type, String exchange, List<MACDItem> macdList) {
-        logger.info("开始检查 DIF 趋势，交易所：{}，币种：{}，间隔：{}", exchange, symbol, type);
-
-        List<Double> difList = macdList.stream().map(MACDItem::getDif).collect(Collectors.toList());
-
-        int size = difList.size();
-
-        String sign = "";
-
-        if (difList.get(size - 1) > difList.get(size - 2)
-                && difList.get(size - 2) > difList.get(size - 3)
-                && difList.get(size - 3) < difList.get(size - 4)) {
-            sign = "转折向上，请注意";
-        }
-        if (difList.get(size - 1) < difList.get(size - 2)
-                && difList.get(size - 2) < difList.get(size - 3)
-                && difList.get(size - 3) > difList.get(size - 4)) {
-            sign = "转折向下，请注意";
-        }
-
-        if (!StringUtils.isEmpty(sign)) {
-            sendMail(sign, exchange, symbol, type);
-            addRecord(macdList.get(0).toString());
-        }
-        logger.info("DIF 趋势检查完毕");
     }
 
     private void checkCross(String symbol, String type, String exchange, List<MACDItem> macdList) {

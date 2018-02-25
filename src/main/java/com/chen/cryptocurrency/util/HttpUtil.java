@@ -101,10 +101,14 @@ public class HttpUtil {
         return getResult(response);
     }
 
-    public String requestHttpPost(String domain, String url, Map<String, String> params) {
+    public String requestHttpPost(String domain, String path, String param, Map<String, String> params) {
 
         idleConnectionMonitor();
-        url = domain + url;
+        String url = domain + path;
+        if (!url.endsWith("?")) {
+            url += "?";
+        }
+        url += param;
         HttpPost method = this.httpPostMethod(url);
         List<NameValuePair> valuePairs = this.convertMap2PostParams(params);
         UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(valuePairs, Consts.UTF_8);

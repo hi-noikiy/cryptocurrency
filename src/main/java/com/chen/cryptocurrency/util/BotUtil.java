@@ -1,6 +1,9 @@
 package com.chen.cryptocurrency.util;
 
+import com.chen.cryptocurrency.service.bean.CheckResult;
 import com.opencsv.CSVReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.ta4j.core.*;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
@@ -18,10 +21,10 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BotUtil {
+    private static Logger logger = LoggerFactory.getLogger(BotUtil.class);
+
     /**
      * @return a time series from Bitstamp (bitcoin exchange) trades
      */
@@ -35,7 +38,7 @@ public class BotUtil {
             lines = csvReader.readAll();
             lines.remove(0); // Removing header line
         } catch (IOException ioe) {
-            Logger.getLogger(BotUtil.class.getName()).log(Level.SEVERE, "Unable to load trades from CSV", ioe);
+            logger.error("Unable to load trades from CSV", ioe);
         } finally {
             if (csvReader != null) {
                 try {
@@ -76,18 +79,17 @@ public class BotUtil {
      * @param longCount
      * @return 1 buy, -1 sell , 0 sleep
      */
-    public static int check(String fileName, int longCount) {
+    public static CheckResult check(String fileName, int longCount) {
+        logger.info("check , fileName:{}, longCount:{}. ", fileName, longCount);
+
         TimeSeries series = loadCSV(fileName);
 
         ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
 
         SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
-
-        System.out.println("longSma : " + longCount);
-
         SMAIndicator longSma = new SMAIndicator(closePrice, longCount);
-        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
 
+        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
         Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
 
         // Running our juicy trading strategy...
@@ -96,16 +98,17 @@ public class BotUtil {
         Strategy strategy = new BaseStrategy(buyingRule, sellingRule);
 
         TradingRecord tradingRecord = seriesManager.run(strategy);
+        CheckResult checkResult = new CheckResult();
+        checkResult.setPrice(series.getBar(series.getEndIndex()).getClosePrice());
 
         if (strategy.shouldEnter(series.getEndIndex(), tradingRecord)) {
-            return 1;
+            checkResult.setSign(1);
         }
         if (strategy.shouldExit(series.getEndIndex(), tradingRecord)) {
-            return -1;
+            checkResult.setSign(-1);
         }
-        return 0;
+        return checkResult;
     }
-
     /**
      * Builds a list of populated bars from csv data.
      *

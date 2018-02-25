@@ -1,12 +1,14 @@
 package com.chen.cryptocurrency.service;
 
 import com.chen.cryptocurrency.remote.ExchangeRemote;
-import com.chen.cryptocurrency.service.bean.KLineItem;
-import com.chen.cryptocurrency.service.bean.MACDItem;
-import com.chen.cryptocurrency.service.bean.TaskItem;
+import com.chen.cryptocurrency.service.bean.*;
 import com.chen.cryptocurrency.service.task.MacdCheckTasks;
+import com.chen.cryptocurrency.util.Constant;
+import com.chen.cryptocurrency.util.FileUtil;
 import com.chen.cryptocurrency.util.IndexUtil;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class CoinService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private ExchangeRemote exchangeRemote;
 
@@ -55,5 +58,26 @@ public class CoinService {
                 MacdCheckTasks.taskItems.remove(taskItem);
             }
         }
+    }
+
+    public void csvSync() {
+        List<KLineItem> btcLine = queryKLine(Coin.BTC.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
+        FileUtil.writeCSV(Constant.btc_file_name, btcLine);
+        logger.info("csv sync , btc last line :");
+        logger.info("last 2:{}",btcLine.get(btcLine.size()-2));
+        logger.info("last 1:{}",btcLine.get(btcLine.size()-1));
+
+        List<KLineItem> eosLine = queryKLine(Coin.EOS.getSymbol() + "_usdt", "4hour", Exchange.OKEX.name());
+        FileUtil.writeCSV(Constant.eos_file_name, eosLine);
+        logger.info("csv sync , eos last line :");
+        logger.info("last 2:{}",eosLine.get(eosLine.size()-2));
+        logger.info("last 1:{}",eosLine.get(eosLine.size()-1));
+
+        List<KLineItem> neoLine = queryKLine(Coin.NEO.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
+        FileUtil.writeCSV(Constant.neo_file_name, neoLine);
+        logger.info("csv sync , neo last line :");
+        logger.info("last 2:{}",neoLine.get(neoLine.size()-2));
+        logger.info("last 1:{}",neoLine.get(neoLine.size()-1));
+
     }
 }
