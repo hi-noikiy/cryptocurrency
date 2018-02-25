@@ -2,6 +2,7 @@ package com.chen.cryptocurrency.controller;
 
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.TaskItem;
+import com.chen.cryptocurrency.util.BotUtil;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,12 @@ import java.util.List;
 public class CoinController {
     @Resource
     private CoinService coinService;
+
+    @RequestMapping("/test/check")
+    String add() {
+        BotUtil.check("btc.csv", 34);
+        return "ok";
+    }
 
     @RequestMapping("/task/add")
     String add(@RequestParam String symbol,

@@ -44,16 +44,16 @@ public class MacdCheckTasks implements InitializingBean {
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void checkTask() {
-        if (mailRecord.size() > 200) {
-            mailRecord.clear();
-        }
-        logger.info("开始执行检查！");
-        for (TaskItem item : taskItems) {
-            checkMACD(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
-            checkMACD(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
-        }
-
-        logger.info("检查完毕！");
+//        if (mailRecord.size() > 200) {
+//            mailRecord.clear();
+//        }
+//        logger.info("开始执行检查！");
+//        for (TaskItem item : taskItems) {
+//            checkMACD(item.getSymbol() + "_usd", item.getType(), Exchange.OKCOIN.name());
+//            checkMACD(item.getSymbol() + "_usdt", item.getType(), Exchange.OKEX.name());
+//        }
+//
+//        logger.info("检查完毕！");
     }
 
     private void checkMACD(String symbol, String type, String exchange) {
