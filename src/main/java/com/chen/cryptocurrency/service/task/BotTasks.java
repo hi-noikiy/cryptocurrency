@@ -48,7 +48,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
                 MailUtil.sendMail("Should buy BTC!price : " + btcCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
-                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "buy", btcCheckResult.getPrice().toString(), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
+                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "buy_market", String.valueOf(cash), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
                 }
             }
             if (eosCheckResult.shouldBuy()) {
@@ -56,7 +56,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), cash);
                 MailUtil.sendMail("Should buy EOS!price : " + eosCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
-                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "buy", eosCheckResult.getPrice().toString(), decimalFormat.format(cash/eosCheckResult.getPrice().doubleValue()));
+                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "buy_market", String.valueOf(cash), decimalFormat.format(cash/eosCheckResult.getPrice().doubleValue()));
                 }
             }
             if (neoCheckResult.shouldBuy()) {
@@ -64,7 +64,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), cash);
                 MailUtil.sendMail("Should buy NEO!price : " + neoCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
-                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "buy", neoCheckResult.getPrice().toString(), decimalFormat.format(cash/neoCheckResult.getPrice().doubleValue()));
+                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "buy_market", String.valueOf(cash), decimalFormat.format(cash/neoCheckResult.getPrice().doubleValue()));
                 }
             }
         } else {
@@ -73,7 +73,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), exchangeRemote.getTradeAmount("btc"));
                 MailUtil.sendMail("Should sell BTC!price : " + btcCheckResult.getPrice(), "look up!");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 1) {
-                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "sell", btcCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("btc"));
+                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "sell_market", btcCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("btc"));
                 }
             }
             if (eosCheckResult.shouldSell()) {
@@ -82,7 +82,7 @@ public class BotTasks {
                 MailUtil.sendMail("Should sell EOS!price : " + eosCheckResult.getPrice(), "look up!");
 
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 1) {
-                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "sell", eosCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("eos"));
+                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "sell_market", eosCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("eos"));
                 }
             }
             if (neoCheckResult.shouldSell()) {
@@ -91,7 +91,7 @@ public class BotTasks {
                 MailUtil.sendMail("Should sell NEO!price : " + neoCheckResult.getPrice(), "look up!");
 
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 1) {
-                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "sell", neoCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("neo"));
+                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "sell_market", neoCheckResult.getPrice().toString(), exchangeRemote.getTradeAmount("neo"));
                 }
             }
         }
