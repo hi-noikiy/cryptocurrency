@@ -45,13 +45,14 @@ public class CoinController {
     }
 
     @RequestMapping("/current")
-    List<Trade> current() {
+    String current() {
         Trade btcTrade = BotUtil.current(Constant.btc_file_name, 10);
         Trade eosTrade = BotUtil.current(Constant.eos_file_name, 16);
         Trade neoTrade = BotUtil.current(Constant.neo_file_name, 16);
 
-
-        return Lists.newArrayList(btcTrade, eosTrade, neoTrade);
+        return btcTrade.toString()+"\n"
+                +eosTrade.toString()+"\n"
+                +neoTrade.toString()+"\n";
     }
 
     @RequestMapping("/test/check")
