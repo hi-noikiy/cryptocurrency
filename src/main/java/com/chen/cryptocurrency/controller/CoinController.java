@@ -51,7 +51,7 @@ public class CoinController {
 
     @RequestMapping("/test/trade/task")
     String tradeTask() {
-        CheckResult btcCheckResult = BotUtil.check("btc.csv", 34);
+        CheckResult btcCheckResult = BotUtil.check("btc.csv", 10);
 
         exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "sell", btcCheckResult.getPrice().multipliedBy(2).toString(), exchangeRemote.getTradeAmount("btc"));
         return "ok";

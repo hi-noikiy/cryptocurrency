@@ -5,10 +5,12 @@ import com.opencsv.CSVReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ta4j.core.*;
+import org.ta4j.core.indicators.MACDIndicator;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
+import org.ta4j.core.trading.rules.IsRisingRule;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -91,8 +93,16 @@ public class BotUtil {
         SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
         SMAIndicator longSma = new SMAIndicator(closePrice, longCount);
 
-        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
-        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
+        MACDIndicator macdIndicator = new MACDIndicator(closePrice, 12, 26);
+        SMAIndicator dea = new SMAIndicator(macdIndicator, longCount);
+
+        //sma rule
+//        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma).and(new IsRisingRule(longSma, 1));
+//        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
+
+        //macd rule
+        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
+        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
 
         // Running our juicy trading strategy...
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);

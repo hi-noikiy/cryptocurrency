@@ -67,7 +67,7 @@ public class CoinService {
         logger.info("last 2:{}",btcLine.get(btcLine.size()-2));
         logger.info("last 1:{}",btcLine.get(btcLine.size()-1));
 
-        List<KLineItem> eosLine = queryKLine(Coin.EOS.getSymbol() + "_usdt", "4hour", Exchange.OKEX.name());
+        List<KLineItem> eosLine = queryKLine(Coin.EOS.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
         FileUtil.writeCSV(Constant.eos_file_name, eosLine);
         logger.info("csv sync , eos last line :");
         logger.info("last 2:{}",eosLine.get(eosLine.size()-2));

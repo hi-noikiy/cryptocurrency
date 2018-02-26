@@ -31,16 +31,10 @@ public class BotTasks {
     @Scheduled(cron = "0 1 0/2 * * ? ")
     public void checkTask() {
         logger.info("check task begin !");
-        try {
-            BotUtil.check("btc.csv", 34);
-        } catch (Exception e) {
-            e.printStackTrace();
-            coinService.csvSync();
-        }
 
-        CheckResult btcCheckResult = BotUtil.check("btc.csv", 34);
-        CheckResult eosCheckResult = BotUtil.check("eos.csv", 10);
-        CheckResult neoCheckResult = BotUtil.check("neo.csv", 13);
+        CheckResult btcCheckResult = BotUtil.check("btc.csv", 10);
+        CheckResult eosCheckResult = BotUtil.check("eos.csv", 16);
+        CheckResult neoCheckResult = BotUtil.check("neo.csv", 16);
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
 
