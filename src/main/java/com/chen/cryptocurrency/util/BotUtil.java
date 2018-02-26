@@ -123,6 +123,39 @@ public class BotUtil {
     }
 
     /**
+     * @param fileName
+     * @param longCount
+     * @return 1 buy, -1 sell , 0 sleep
+     */
+    public static Trade current(String fileName, int longCount) {
+        TimeSeries series = loadCSV(fileName);
+
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+
+        SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
+        SMAIndicator longSma = new SMAIndicator(closePrice, longCount);
+
+        MACDIndicator macdIndicator = new MACDIndicator(closePrice, 12, 26);
+        SMAIndicator dea = new SMAIndicator(macdIndicator, longCount);
+
+        //sma rule
+//        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma).and(new IsRisingRule(longSma, 1));
+//        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
+
+        //macd rule
+        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
+        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
+
+        // Running our juicy trading strategy...
+        TimeSeriesManager seriesManager = new TimeSeriesManager(series);
+
+        Strategy strategy = new BaseStrategy(buyingRule, sellingRule);
+
+        TradingRecord tradingRecord = seriesManager.run(strategy);
+        return tradingRecord.getCurrentTrade();
+    }
+
+    /**
      * Builds a list of populated bars from csv data.
      *
      * @param beginTime the begin time of the whole period

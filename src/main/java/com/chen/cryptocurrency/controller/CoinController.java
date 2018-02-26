@@ -6,10 +6,17 @@ import com.chen.cryptocurrency.service.bean.CheckResult;
 import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.util.BotUtil;
+import com.chen.cryptocurrency.util.Constant;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.ta4j.core.Trade;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -35,6 +42,16 @@ public class CoinController {
                  @RequestParam String amount) {
         coinService.trade(symbol, type, price, amount);
         return "ok";
+    }
+
+    @RequestMapping("/current")
+    List<Trade> current() {
+        Trade btcTrade = BotUtil.current(Constant.btc_file_name, 10);
+        Trade eosTrade = BotUtil.current(Constant.eos_file_name, 16);
+        Trade neoTrade = BotUtil.current(Constant.neo_file_name, 16);
+
+
+        return Lists.newArrayList(btcTrade, eosTrade, neoTrade);
     }
 
     @RequestMapping("/test/check")
