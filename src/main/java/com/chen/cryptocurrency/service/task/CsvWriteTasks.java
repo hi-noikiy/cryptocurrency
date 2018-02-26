@@ -19,12 +19,6 @@ public class CsvWriteTasks{
     @Resource
     private CoinService coinService;
 
-    @PostConstruct
-    private void init() {
-        logger.info("write task begin !");
-        coinService.csvSync();
-    }
-
     @Scheduled(cron = "0 0/10 * * * ?")
     public void writeTask() {
         logger.info("write task begin !");
