@@ -44,17 +44,17 @@ public class BotTasks {
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
 
-        DecimalFormat decimalFormat = new DecimalFormat("#####.##");
+        DecimalFormat decimalFormat = new DecimalFormat("#####.####");
         if (cashTotal > 10) {
             int cashPiece = 3 - ExchangeRemote.TRADE_STATUS.buyTotal();
-            String cash = decimalFormat.format((cashTotal - 1) / cashPiece);
+            double cash = (cashTotal - 1) / cashPiece;
 
             if (btcCheckResult.shouldBuy()) {
                 logger.info("check result : Should buy BTC!");
-                logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), cash);
+                logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
                 MailUtil.sendMail("Should buy BTC!price : " + btcCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
-                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "buy", btcCheckResult.getPrice().toString(), cash);
+                    exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "buy", btcCheckResult.getPrice().toString(), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
                 }
             }
             if (eosCheckResult.shouldBuy()) {
@@ -62,7 +62,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), cash);
                 MailUtil.sendMail("Should buy EOS!price : " + eosCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
-                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "buy", eosCheckResult.getPrice().toString(), cash);
+                    exchangeRemote.trade(Coin.EOS.getSymbol() + "_usdt", "buy", eosCheckResult.getPrice().toString(), decimalFormat.format(cash/eosCheckResult.getPrice().doubleValue()));
                 }
             }
             if (neoCheckResult.shouldBuy()) {
@@ -70,7 +70,7 @@ public class BotTasks {
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), cash);
                 MailUtil.sendMail("Should buy NEO!price : " + neoCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
-                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "buy", neoCheckResult.getPrice().toString(), cash);
+                    exchangeRemote.trade(Coin.NEO.getSymbol() + "_usdt", "buy", neoCheckResult.getPrice().toString(), decimalFormat.format(cash/neoCheckResult.getPrice().doubleValue()));
                 }
             }
         } else {

@@ -28,6 +28,15 @@ public class CoinController {
     @Resource
     private ExchangeRemote exchangeRemote;
 
+    @RequestMapping("/trade")
+    String trade(@RequestParam String symbol,
+                 @RequestParam String type,
+                 @RequestParam String price,
+                 @RequestParam String amount) {
+        coinService.trade(symbol, type, price, amount);
+        return "ok";
+    }
+
     @RequestMapping("/test/check")
     String check() {
         BotUtil.check("btc.csv", 34);
