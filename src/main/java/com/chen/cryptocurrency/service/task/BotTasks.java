@@ -32,9 +32,9 @@ public class BotTasks {
     public void checkTask() {
         logger.info("check task begin !");
 
-        CheckResult btcCheckResult = BotUtil.check("btc.csv", 10);
-        CheckResult eosCheckResult = BotUtil.check("eos.csv", 16);
-        CheckResult neoCheckResult = BotUtil.check("neo.csv", 16);
+        CheckResult btcCheckResult = BotUtil.check("btc.csv", 34);
+        CheckResult eosCheckResult = BotUtil.check("eos.csv", 40);
+        CheckResult neoCheckResult = BotUtil.check("neo.csv", 13);
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
 

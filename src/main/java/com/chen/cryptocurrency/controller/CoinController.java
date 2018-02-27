@@ -46,9 +46,9 @@ public class CoinController {
 
     @RequestMapping("/current")
     String current() {
-        Trade btcTrade = BotUtil.current(Constant.btc_file_name, 10);
-        Trade eosTrade = BotUtil.current(Constant.eos_file_name, 16);
-        Trade neoTrade = BotUtil.current(Constant.neo_file_name, 16);
+        Trade btcTrade = BotUtil.current(Constant.btc_file_name, 34);
+        Trade eosTrade = BotUtil.current(Constant.eos_file_name, 40);
+        Trade neoTrade = BotUtil.current(Constant.neo_file_name, 13);
 
         return btcTrade.toString()+"\n"
                 +eosTrade.toString()+"\n"

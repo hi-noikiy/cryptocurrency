@@ -97,12 +97,12 @@ public class BotUtil {
         SMAIndicator dea = new SMAIndicator(macdIndicator, longCount);
 
         //sma rule
-//        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma).and(new IsRisingRule(longSma, 1));
-//        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
+        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
+        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
 
         //macd rule
-        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
-        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
+//        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
+//        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
 
         // Running our juicy trading strategy...
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
@@ -139,12 +139,12 @@ public class BotUtil {
         SMAIndicator dea = new SMAIndicator(macdIndicator, longCount);
 
         //sma rule
-//        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma).and(new IsRisingRule(longSma, 1));
-//        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
+        Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
+        Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
 
         //macd rule
-        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
-        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
+//        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
+//        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
 
         // Running our juicy trading strategy...
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
