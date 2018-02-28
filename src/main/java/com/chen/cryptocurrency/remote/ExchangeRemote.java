@@ -139,6 +139,52 @@ public class ExchangeRemote {
         return ACCOUNT_STATUS.get(key);
     }
 
+    public void sellMarket(String symbol, String amount) {
+        logger.info("sell market, symbol:{}, amount:{}.", symbol, amount);
+
+        String path = "/api/v1/trade.do";
+        Map<String, String> paramMap = Maps.newHashMap();
+
+        String param = new Param()
+                .add("amount", amount)
+                .add("api_key", okexApiKey)
+                .add("symbol", symbol)
+                .add("type", "sell_market")
+                .add("secret_key", okexSecretKey)
+                .build();
+
+        String sign = MD5.encrypt(param);
+
+        param = new Param(param).add("sign", sign).build();
+
+        String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
+        logger.info("trade result : ");
+        logger.info(response);
+    }
+
+    public void buyMarket(String symbol, String price) {
+        logger.info("buy market, symbol:{}, price:{}.", symbol, price);
+
+        String path = "/api/v1/trade.do";
+        Map<String, String> paramMap = Maps.newHashMap();
+
+        String param = new Param()
+                .add("api_key", okexApiKey)
+                .add("price", price)
+                .add("symbol", symbol)
+                .add("type", "buy_market")
+                .add("secret_key", okexSecretKey)
+                .build();
+
+        String sign = MD5.encrypt(param);
+
+        param = new Param(param).add("sign", sign).build();
+
+        String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
+        logger.info("trade result : ");
+        logger.info(response);
+    }
+
     public void trade(String symbol, String type, String price, String amount) {
         logger.info("trade, symbol:{}, type:{}, price:{}, amount:{}.", symbol, type, price, amount);
 

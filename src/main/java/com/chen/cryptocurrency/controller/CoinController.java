@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,9 +51,9 @@ public class CoinController {
         Trade eosTrade = BotUtil.current(Constant.eos_file_name, 40);
         Trade neoTrade = BotUtil.current(Constant.neo_file_name, 13);
 
-        return btcTrade.toString()+"\n"
-                +eosTrade.toString()+"\n"
-                +neoTrade.toString()+"\n";
+        return btcTrade.toString() + "\n"
+                + eosTrade.toString() + "\n"
+                + neoTrade.toString() + "\n";
     }
 
     @RequestMapping("/test/check")
@@ -64,6 +65,19 @@ public class CoinController {
     @RequestMapping("/test/trade")
     String trade(@RequestParam String price, @RequestParam String amount) {
         coinService.trade("btc_usdt", "sell", price, amount);
+        return "ok";
+    }
+
+    @RequestMapping("/test/tradeMarket")
+    String tradeMarket(@RequestParam() String symbol,
+                       @RequestParam(required = false) String price,
+                       @RequestParam(required = false) String amount) {
+        if (StringUtils.isNotEmpty(price)) {
+            exchangeRemote.buyMarket(symbol, price);
+        }
+        if (StringUtils.isNotEmpty(amount)) {
+            exchangeRemote.sellMarket(symbol, amount);
+        }
         return "ok";
     }
 
