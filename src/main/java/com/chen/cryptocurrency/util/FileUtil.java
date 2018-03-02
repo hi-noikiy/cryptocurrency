@@ -12,6 +12,11 @@ import java.util.List;
 
 public class FileUtil {
     public static void writeCSV(String fileName, List<KLineItem> result) {
+        //去除过早数据，只取最近的
+        if (result.size() > 800) {
+            result = result.subList(result.size() - 800, result.size() - 1);
+        }
+
         File file = new File(fileName);
 
         try (BufferedWriter writer = Files.newWriter(file, Charset.forName("utf-8"))) {

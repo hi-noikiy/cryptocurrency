@@ -7,11 +7,6 @@ import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.Constant;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,9 +42,9 @@ public class CoinController {
 
     @RequestMapping("/current")
     String current() {
-        Trade btcTrade = BotUtil.current(Constant.btc_file_name, 34);
-        Trade eosTrade = BotUtil.current(Constant.eos_file_name, 40);
-        Trade neoTrade = BotUtil.current(Constant.neo_file_name, 13);
+        Trade btcTrade = BotUtil.current(Constant.BTC_FILE_NAME, CoinService.bestCoinRange.get(Coin.BTC));
+        Trade eosTrade = BotUtil.current(Constant.EOS_FILE_NAME, CoinService.bestCoinRange.get(Coin.EOS));
+        Trade neoTrade = BotUtil.current(Constant.NEO_FILE_NAME, CoinService.bestCoinRange.get(Coin.NEO));
 
         return btcTrade.toString() + "\n"
                 + eosTrade.toString() + "\n"
@@ -66,6 +61,24 @@ public class CoinController {
     String trade(@RequestParam String price, @RequestParam String amount) {
         coinService.trade("btc_usdt", "sell", price, amount);
         return "ok";
+    }
+
+    @RequestMapping("/test/writeCSV")
+    String writeCSV() {
+        coinService.csvSync();
+
+        return "ok";
+    }
+
+    @RequestMapping("/test/checkBS")
+    String checkBS() {
+        Integer btcBestRange = coinService.checkRange(Coin.BTC);
+        Integer eosBestRange = coinService.checkRange(Coin.EOS);
+        Integer neoBestRange = coinService.checkRange(Coin.NEO);
+
+        return "btc:" + btcBestRange
+                + "eos:" + eosBestRange
+                + "neo:" + neoBestRange;
     }
 
     @RequestMapping("/test/tradeMarket")

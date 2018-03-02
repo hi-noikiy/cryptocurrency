@@ -6,21 +6,24 @@ import com.chen.cryptocurrency.service.bean.CheckResult;
 import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.MailUtil;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.ta4j.core.Decimal;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.text.DecimalFormat;
+import java.util.Map;
 
 /**
  * @author chenxiaotong
  * @date 2018/1/25
  */
 @Component
-public class BotTasks {
+public class CoinSchedule {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
@@ -28,24 +31,66 @@ public class BotTasks {
     @Resource
     private CoinService coinService;
 
-    @Scheduled(cron = "0 1 0/2 * * ? ")
-    public void checkTask() {
-        logger.info("check task begin !");
+    @PostConstruct
+    private void init() {
+        Integer btcBestRange = coinService.checkRange(Coin.BTC);
+        CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+        Integer eosBestRange = coinService.checkRange(Coin.EOS);
+        CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
+        Integer neoBestRange = coinService.checkRange(Coin.NEO);
+        CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+    }
 
-        CheckResult btcCheckResult = BotUtil.check("btc.csv", 34);
-        CheckResult eosCheckResult = BotUtil.check("eos.csv", 40);
-        CheckResult neoCheckResult = BotUtil.check("neo.csv", 13);
+    @Scheduled(cron = "0 0/30 * * * ? ")
+    public void syncStatusTask() {
+        logger.info("sync account status, begin !");
+
+        exchangeRemote.syncStatus();
+    }
+
+    @Scheduled(cron = "0 1 0/2 * * ?")
+    public void writeTask() {
+        logger.info("write csv task, begin !");
+
+        coinService.csvSync();
+    }
+
+    @Scheduled(cron = "0 2 0/2 * * ?")
+    public void checkBestRange() {
+        logger.info("check best range !");
+
+        if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
+            Integer btcBestRange = coinService.checkRange(Coin.BTC);
+            CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+        }
+        if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
+            Integer eosBestRange = coinService.checkRange(Coin.EOS);
+            CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
+
+        }
+        if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
+            Integer neoBestRange = coinService.checkRange(Coin.NEO);
+            CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+        }
+    }
+
+    @Scheduled(cron = "30 2 0/2 * * ? ")
+    public void checkBuySell() {
+        logger.info("check buy/sell task begin !");
+
+        CheckResult btcCheckResult = BotUtil.check(Coin.getFileName(Coin.BTC), CoinService.bestCoinRange.get(Coin.BTC));
+        CheckResult eosCheckResult = BotUtil.check(Coin.getFileName(Coin.EOS), CoinService.bestCoinRange.get(Coin.EOS));
+        CheckResult neoCheckResult = BotUtil.check(Coin.getFileName(Coin.NEO), CoinService.bestCoinRange.get(Coin.NEO));
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
 
-        DecimalFormat decimalFormat = new DecimalFormat("#####.####");
         if (cashTotal > 10) {
             int cashPiece = 3 - ExchangeRemote.TRADE_STATUS.buyTotal();
             double cash = (cashTotal - 1) / cashPiece;
 
             if (btcCheckResult.shouldBuy()) {
                 logger.info("check result : Should buy BTC!");
-                logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), decimalFormat.format(cash / btcCheckResult.getPrice().doubleValue()));
+                logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), cash);
                 MailUtil.sendMail("Should buy BTC!price : " + btcCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
                     exchangeRemote.buyMarket(Coin.BTC.getSymbol() + "_usdt", String.valueOf(cash));
@@ -94,16 +139,8 @@ public class BotTasks {
 
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 1) {
                     exchangeRemote.sellMarket(Coin.NEO.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("neo"));
-
                 }
             }
         }
-    }
-
-    @Scheduled(cron = "0 0/5 * * * ? ")
-    public void syncStatusTask() {
-        logger.info("sync task begin !");
-
-        exchangeRemote.syncStatus();
     }
 }

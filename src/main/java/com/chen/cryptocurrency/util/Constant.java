@@ -1,5 +1,6 @@
 package com.chen.cryptocurrency.util;
 
+import com.chen.cryptocurrency.service.bean.Coin;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
@@ -8,10 +9,10 @@ import com.google.common.base.Splitter;
  * @date 2018/1/25
  */
 public class Constant {
-    public final static Splitter key_splitter = Splitter.on("|");
-    public final static Joiner key_joiner = Joiner.on("|");
+    public final static Splitter KEY_SPLITTER = Splitter.on("|");
+    public final static Joiner KEY_JOINER = Joiner.on("|");
 
-    public final static String btc_file_name = "btc.csv";
-    public final static String eos_file_name = "eos.csv";
-    public final static String neo_file_name = "neo.csv";
+    public final static String BTC_FILE_NAME = "btc.csv";
+    public final static String EOS_FILE_NAME = "eos.csv";
+    public final static String NEO_FILE_NAME = "neo.csv";
 }

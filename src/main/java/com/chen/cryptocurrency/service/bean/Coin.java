@@ -1,5 +1,9 @@
 package com.chen.cryptocurrency.service.bean;
 
+import static com.chen.cryptocurrency.util.Constant.BTC_FILE_NAME;
+import static com.chen.cryptocurrency.util.Constant.EOS_FILE_NAME;
+import static com.chen.cryptocurrency.util.Constant.NEO_FILE_NAME;
+
 public enum Coin {
     BTC("btc","bitcoin"),
     ETH("eth","ethereum"),
@@ -31,5 +35,20 @@ public enum Coin {
 
     public String getDataName() {
         return dataName;
+    }
+
+
+    public static String getFileName(Coin coin) {
+        switch (coin) {
+            case BTC:
+                return BTC_FILE_NAME;
+            case EOS:
+                return EOS_FILE_NAME;
+            case NEO:
+                return NEO_FILE_NAME;
+
+            default:
+                throw new RuntimeException("未找到对应文件，coin:" + coin.getSymbol());
+        }
     }
 }

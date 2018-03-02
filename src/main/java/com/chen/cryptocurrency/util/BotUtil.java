@@ -10,7 +10,6 @@ import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
-import org.ta4j.core.trading.rules.IsRisingRule;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -75,7 +74,7 @@ public class BotUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(check(Constant.btc_file_name, 34));
+        System.out.println(check(Constant.BTC_FILE_NAME, 34));
     }
 
     /**
@@ -93,16 +92,9 @@ public class BotUtil {
         SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
         SMAIndicator longSma = new SMAIndicator(closePrice, longCount);
 
-        MACDIndicator macdIndicator = new MACDIndicator(closePrice, 12, 26);
-        SMAIndicator dea = new SMAIndicator(macdIndicator, longCount);
-
         //sma rule
         Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma);
         Rule sellingRule = new CrossedDownIndicatorRule(shortSma, longSma);
-
-        //macd rule
-//        Rule buyingRule = new CrossedUpIndicatorRule(macdIndicator, dea);
-//        Rule sellingRule = new CrossedDownIndicatorRule(macdIndicator, dea);
 
         // Running our juicy trading strategy...
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
