@@ -78,6 +78,8 @@ public class CoinSchedule {
     public void checkBuySell() {
         logger.info("check buy/sell task begin !");
 
+        coinService.checkCSV();
+
         CheckResult btcCheckResult = BotUtil.check(Coin.getFileName(Coin.BTC), CoinService.bestCoinRange.get(Coin.BTC));
         CheckResult eosCheckResult = BotUtil.check(Coin.getFileName(Coin.EOS), CoinService.bestCoinRange.get(Coin.EOS));
         CheckResult neoCheckResult = BotUtil.check(Coin.getFileName(Coin.NEO), CoinService.bestCoinRange.get(Coin.NEO));

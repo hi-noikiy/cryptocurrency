@@ -9,6 +9,7 @@ import com.chen.cryptocurrency.util.FileUtil;
 import com.chen.cryptocurrency.util.IndexUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,9 @@ import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -127,8 +131,6 @@ public class CoinService {
                 count = amount.multipliedBy(0.9985).dividedBy(series.getBar(entryIndex).getClosePrice().multipliedBy(1.003));
                 amount = count.multipliedBy(series.getBar(exitIndex).getClosePrice().multipliedBy(0.997)).multipliedBy(0.998);
             }
-            logger.info("longInt : " + longInt);
-            logger.info("amount : " + amount);
             amountList.add(amount);
         }
 
@@ -149,5 +151,25 @@ public class CoinService {
         logger.info("highCount : " + highCount);
 
         return highCount;
+    }
+
+    public void checkCSV() {
+        File btcFile = new File(Constant.BTC_FILE_NAME);
+        File eosFile = new File(Constant.EOS_FILE_NAME);
+        File neoFile = new File(Constant.NEO_FILE_NAME);
+
+        try {
+            List<String> btcLines = Files.readLines(btcFile, Charset.forName("utf-8"));
+            List<String> eosLines = Files.readLines(eosFile, Charset.forName("utf-8"));
+            List<String> neoLines = Files.readLines(neoFile, Charset.forName("utf-8"));
+
+            logger.info("Last line of BTC :{}", btcLines.get(btcLines.size() - 1));
+            logger.info("Last line of EOS :{}", eosLines.get(eosLines.size() - 1));
+            logger.info("Last line of NEO :{}", neoLines.get(neoLines.size() - 1));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

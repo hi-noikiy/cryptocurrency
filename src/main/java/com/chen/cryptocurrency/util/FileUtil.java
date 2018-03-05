@@ -1,6 +1,7 @@
 package com.chen.cryptocurrency.util;
 
 import com.chen.cryptocurrency.service.bean.KLineItem;
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import java.io.BufferedWriter;
@@ -14,7 +15,7 @@ public class FileUtil {
     public static void writeCSV(String fileName, List<KLineItem> result) {
         //去除过早数据，只取最近的
         if (result.size() > 800) {
-            result = result.subList(result.size() - 800, result.size() - 1);
+            result = result.subList(result.size() - 800, result.size());
         }
 
         File file = new File(fileName);
