@@ -85,9 +85,10 @@ public class CoinSchedule {
         CheckResult neoCheckResult = BotUtil.check(Coin.getFileName(Coin.NEO), CoinService.bestCoinRange.get(Coin.NEO));
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
+        int cashPiece = 3 - ExchangeRemote.TRADE_STATUS.buyTotal();
 
-        if (cashTotal > 10) {
-            int cashPiece = 3 - ExchangeRemote.TRADE_STATUS.buyTotal();
+        // 有未持有项，检查是否buy
+        if (ExchangeRemote.TRADE_STATUS.buyTotal() < 3) {
             double cash = (cashTotal - 1) / cashPiece;
 
             if (btcCheckResult.shouldBuy()) {
@@ -116,7 +117,11 @@ public class CoinSchedule {
 
                 }
             }
-        } else {
+        }
+
+
+        // 已经持有，检查是否sell
+        if (ExchangeRemote.TRADE_STATUS.buyTotal() > 0) {
             if (btcCheckResult.shouldSell()) {
                 logger.info("check result : Should sell BTC!");
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), exchangeRemote.getTradeAmount("btc"));
