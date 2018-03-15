@@ -75,9 +75,10 @@ public class ShellHttpClient implements CoinHttpClient {
             logger.info("exec result:{}", builder.toString());
 
             return builder.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("sh 执行失败 ， cmd:{}", sh);
+            MailUtil.sendMail("sh 执行失败，请检查", sh + "_" + param);
         }
         logger.info("exec result is null");
 
