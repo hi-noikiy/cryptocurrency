@@ -4,7 +4,10 @@ import com.chen.cryptocurrency.remote.ExchangeRemote;
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.*;
 import com.chen.cryptocurrency.util.BotUtil;
+import com.chen.cryptocurrency.util.CoinHttpClient;
 import com.chen.cryptocurrency.util.Constant;
+import com.chen.cryptocurrency.util.ShellHttpClient;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +31,20 @@ public class CoinController {
     private CoinService coinService;
     @Resource
     private ExchangeRemote exchangeRemote;
+
+    @RequestMapping("/api")
+    String trade(@RequestParam String domain,
+                 @RequestParam String url,
+                 @RequestParam String type) {
+
+        CoinHttpClient client = ShellHttpClient.getInstance();
+        if ("post".equals(type)) {
+            client.requestHttpPost(domain, url, "", Maps.newHashMap());
+        } else {
+            client.requestHttpGet(domain, url, "");
+        }
+        return "ok";
+    }
 
     @RequestMapping("/trade")
     String trade(@RequestParam String symbol,
