@@ -1,7 +1,10 @@
 package com.chen.cryptocurrency.service.task;
 
 import com.chen.cryptocurrency.service.CoinService;
-import com.chen.cryptocurrency.service.bean.*;
+import com.chen.cryptocurrency.service.bean.Coin;
+import com.chen.cryptocurrency.service.bean.KLineItem;
+import com.chen.cryptocurrency.service.bean.MACDItem;
+import com.chen.cryptocurrency.service.bean.TaskItem;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -15,7 +18,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author chenxiaotong

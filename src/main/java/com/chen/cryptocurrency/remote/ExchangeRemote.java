@@ -7,9 +7,7 @@ import com.chen.cryptocurrency.service.bean.TradeStatus;
 import com.chen.cryptocurrency.util.HttpUtil;
 import com.chen.cryptocurrency.util.MD5;
 import com.chen.cryptocurrency.util.Param;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -17,19 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
-
-import static java.awt.SystemColor.info;
 
 /**
  * @author chenxiaotong
@@ -210,7 +200,7 @@ public class ExchangeRemote {
     }
 
     public static void main(String[] args) {
-        System.setProperty("https.protocols", "TLSv1.1");
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         HttpUtil httpUtil = HttpUtil.getInstance();
 
         String domain = "https://www.okex.com";

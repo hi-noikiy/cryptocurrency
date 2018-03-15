@@ -1,10 +1,7 @@
 package com.chen.cryptocurrency.util;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -20,6 +17,8 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/1/25
  */
 public class HttpUtil {
-    private static final int TIME_OUT = 30000;
+    private static final int TIME_OUT = 3000;
     private static HttpUtil instance = new HttpUtil();
     private static HttpClient client;
     private static long startTime = System.currentTimeMillis();
@@ -51,6 +50,8 @@ public class HttpUtil {
     };
 
     private HttpUtil() {
+        System.setProperty("socksProxyHost", "127.0.0.1");
+        System.setProperty("socksProxyPort", "1080");
         client = HttpClients.custom().setConnectionManager(cm).setKeepAliveStrategy(keepAliveStart).build();
     }
 

@@ -1,8 +1,6 @@
 package com.chen.cryptocurrency.service.bean;
 
-import static com.chen.cryptocurrency.util.Constant.BTC_FILE_NAME;
-import static com.chen.cryptocurrency.util.Constant.EOS_FILE_NAME;
-import static com.chen.cryptocurrency.util.Constant.NEO_FILE_NAME;
+import static com.chen.cryptocurrency.util.Constant.*;
 
 public enum Coin {
     BTC("btc","bitcoin"),

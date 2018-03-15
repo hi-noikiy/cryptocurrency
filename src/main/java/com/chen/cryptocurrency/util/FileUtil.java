@@ -1,7 +1,6 @@
 package com.chen.cryptocurrency.util;
 
 import com.chen.cryptocurrency.service.bean.KLineItem;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import java.io.BufferedWriter;

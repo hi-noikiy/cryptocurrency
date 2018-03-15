@@ -6,17 +6,13 @@ import com.chen.cryptocurrency.service.bean.CheckResult;
 import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.MailUtil;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.ta4j.core.Decimal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.text.DecimalFormat;
-import java.util.Map;
 
 /**
  * @author chenxiaotong
