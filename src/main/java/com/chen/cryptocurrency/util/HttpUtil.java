@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author chenxiaotong
  * @date 2018/1/25
  */
-public class HttpUtil {
+public class HttpUtil implements CoinHttpClient {
     private static final int TIME_OUT = 3000;
     private static HttpUtil instance = new HttpUtil();
     private static HttpClient client;
@@ -50,8 +50,6 @@ public class HttpUtil {
     };
 
     private HttpUtil() {
-        System.setProperty("socksProxyHost", "127.0.0.1");
-        System.setProperty("socksProxyPort", "1080");
         client = HttpClients.custom().setConnectionManager(cm).setKeepAliveStrategy(keepAliveStart).build();
     }
 
@@ -87,6 +85,7 @@ public class HttpUtil {
         return new HttpGet(url);
     }
 
+    @Override
     public String requestHttpGet(String domain, String url, String param) {
 
         idleConnectionMonitor();
@@ -102,6 +101,7 @@ public class HttpUtil {
         return getResult(response);
     }
 
+    @Override
     public String requestHttpPost(String domain, String path, String param, Map<String, String> params) {
 
         idleConnectionMonitor();

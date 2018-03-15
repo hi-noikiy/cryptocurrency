@@ -1,12 +1,8 @@
 package com.chen.cryptocurrency.remote;
 
-import com.chen.cryptocurrency.service.bean.CoinDataGet;
-import com.chen.cryptocurrency.service.bean.CoinDataItem;
 import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.service.bean.TradeStatus;
-import com.chen.cryptocurrency.util.HttpUtil;
-import com.chen.cryptocurrency.util.MD5;
-import com.chen.cryptocurrency.util.Param;
+import com.chen.cryptocurrency.util.*;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -15,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class ExchangeRemote {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private HttpUtil httpUtil = HttpUtil.getInstance();
+    private CoinHttpClient httpUtil = ShellHttpClient.getInstance();
 
     @Value("${exchange.okex.domain}")
     private String okexDomain;
@@ -218,38 +212,5 @@ public class ExchangeRemote {
         Gson gson = new Gson();
         System.out.println(gson.fromJson(response, Map.class));
 
-    }
-
-    public List<CoinDataItem> coinData(String coinDataName) {
-        LocalDate now = LocalDate.now();
-        LocalDate begin = now.minusYears(1);
-
-        long endTimeStamp = now.atStartOfDay().toEpochSecond(ZoneOffset.of("+8")) * 1000;
-        long beginTimeStamp = begin.atStartOfDay().toEpochSecond(ZoneOffset.of("+8")) * 1000;
-
-        String param = "/" + beginTimeStamp + "/" + endTimeStamp;
-        HttpUtil httpUtil = HttpUtil.getInstance();
-        String response = httpUtil.requestHttpGet(coinDataDomain, coinDataApi + "/" + coinDataName, param);
-        Gson gson = new Gson();
-        CoinDataGet coinDataGet = gson.fromJson(response, CoinDataGet.class);
-
-        List<List<Double>> coinPriceData = coinDataGet.getPrice_usd();
-        List<CoinDataItem> coinDataList = coinPriceData.stream()
-                .map(coinData -> {
-                            CoinDataItem coinDataItem = new CoinDataItem();
-                            coinDataItem.setPrice(coinData.get(1));
-                            return coinDataItem;
-                        }
-                )
-                .collect(Collectors.toList());
-
-        List<List<Double>> coinVolData = coinDataGet.getVol_usd();
-        for (int i = 0; i < coinDataList.size(); i++) {
-            CoinDataItem coinDataItem = coinDataList.get(i);
-            List<Double> volData = coinVolData.get(i);
-            coinDataItem.setVol(volData.get(1));
-        }
-
-        return coinDataList;
     }
 }
