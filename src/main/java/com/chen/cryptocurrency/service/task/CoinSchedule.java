@@ -55,14 +55,19 @@ public class CoinSchedule {
     public void checkBestRange() {
         logger.info("check best range !");
 
-        Integer btcBestRange = coinService.checkRange(Coin.BTC);
-        CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+        if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
+            Integer btcBestRange = coinService.checkRange(Coin.BTC);
+            CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+        }
+        if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
+            Integer eosBestRange = coinService.checkRange(Coin.EOS);
+            CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
 
-        Integer eosBestRange = coinService.checkRange(Coin.EOS);
-        CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
-
-        Integer neoBestRange = coinService.checkRange(Coin.NEO);
-        CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+        }
+        if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
+            Integer neoBestRange = coinService.checkRange(Coin.NEO);
+            CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+        }
     }
 
     @Scheduled(cron = "0 3 0/2 * * ? ")
