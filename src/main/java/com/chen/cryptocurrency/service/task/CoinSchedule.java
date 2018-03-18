@@ -29,12 +29,12 @@ public class CoinSchedule {
 
     @PostConstruct
     private void init() {
-        Integer btcBestRange = coinService.checkRange(Coin.BTC);
-        CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
-        Integer eosBestRange = coinService.checkRange(Coin.EOS);
-        CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
-        Integer neoBestRange = coinService.checkRange(Coin.NEO);
-        CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+//        Integer btcBestRange = coinService.checkRange(Coin.BTC);
+//        CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+//        Integer eosBestRange = coinService.checkRange(Coin.EOS);
+//        CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
+//        Integer neoBestRange = coinService.checkRange(Coin.NEO);
+//        CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
     }
 
     @Scheduled(cron = "0 0/30 * * * ? ")
