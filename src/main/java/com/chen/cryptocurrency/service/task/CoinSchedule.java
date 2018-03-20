@@ -27,16 +27,6 @@ public class CoinSchedule {
     @Resource
     private CoinService coinService;
 
-    @PostConstruct
-    private void init() {
-//        Integer btcBestRange = coinService.checkRange(Coin.BTC);
-//        CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
-//        Integer eosBestRange = coinService.checkRange(Coin.EOS);
-//        CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
-//        Integer neoBestRange = coinService.checkRange(Coin.NEO);
-//        CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
-    }
-
     @Scheduled(cron = "0 0/30 * * * ? ")
     public void syncStatusTask() {
         logger.info("sync account status, begin !");
@@ -54,6 +44,19 @@ public class CoinSchedule {
     @Scheduled(cron = "30 2 0/2 * * ?")
     public void checkBestRange() {
         logger.info("check best range !");
+
+        if (null == CoinService.bestCoinRange.get(Coin.BTC)) {
+            Integer btcBestRange = coinService.checkRange(Coin.BTC);
+            CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
+        }
+        if (null == CoinService.bestCoinRange.get(Coin.EOS)) {
+            Integer eosBestRange = coinService.checkRange(Coin.EOS);
+            CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
+        }
+        if (null == CoinService.bestCoinRange.get(Coin.NEO)) {
+            Integer neoBestRange = coinService.checkRange(Coin.NEO);
+            CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
+        }
 
         if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
             Integer btcBestRange = coinService.checkRange(Coin.BTC);
