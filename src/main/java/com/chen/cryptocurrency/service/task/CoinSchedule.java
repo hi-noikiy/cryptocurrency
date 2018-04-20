@@ -37,8 +37,12 @@ public class CoinSchedule {
     @Scheduled(cron = "0 2 0/2 * * ?")
     public void writeTask() {
         logger.info("write csv task, begin !");
-
-        coinService.csvSync();
+        try {
+            coinService.csvSync();
+        } catch (Exception e) {
+            logger.error("write csv task error!!!");
+            MailUtil.sendMail("同步数据出错","从交易所读取数据出错，请检查网络！");
+        }
     }
 
     @Scheduled(cron = "30 2 0/2 * * ?")
