@@ -34,7 +34,7 @@ public class CoinSchedule {
         exchangeRemote.syncStatus();
     }
 
-    @Scheduled(cron = "0 2 0/2 * * ?")
+    @Scheduled(cron = "30 1 0/2 * * ?")
     public void writeTask() {
         logger.info("write csv task, begin !");
         try {
@@ -45,7 +45,7 @@ public class CoinSchedule {
         }
     }
 
-    @Scheduled(cron = "30 2 0/2 * * ?")
+    @Scheduled(cron = "0 30 0/12 * * ?")
     public void checkBestRange() {
         logger.info("check best range !");
 
@@ -77,7 +77,7 @@ public class CoinSchedule {
         }
     }
 
-    @Scheduled(cron = "0 3 0/2 * * ? ")
+    @Scheduled(cron = "0 2 0/2 * * ? ")
     public void checkBuySell() {
         logger.info("check buy/sell task begin !");
 
