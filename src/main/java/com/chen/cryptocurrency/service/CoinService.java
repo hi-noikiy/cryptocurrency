@@ -37,7 +37,15 @@ public class CoinService {
     @Resource
     private ExchangeRemote exchangeRemote;
     public static Map<Coin, Integer> bestCoinRange = Maps.newHashMap();
-    public static Map<Coin, Integer> tradeRecord = Maps.newHashMap();
+
+    public Integer rangeGet(Coin coin) {
+        Integer range = bestCoinRange.get(coin);
+        if (range == null) {
+            range = checkRange(coin);
+            bestCoinRange.put(coin, range);
+        }
+        return range;
+    }
 
     public List<KLineItem> queryKLine(String symbol, String type, String exchange) {
         return exchangeRemote.kLine(symbol, type, exchange);

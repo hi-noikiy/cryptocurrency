@@ -49,19 +49,6 @@ public class CoinSchedule {
     public void checkBestRange() {
         logger.info("check best range !");
 
-        if (null == CoinService.bestCoinRange.get(Coin.BTC)) {
-            Integer btcBestRange = coinService.checkRange(Coin.BTC);
-            CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
-        }
-        if (null == CoinService.bestCoinRange.get(Coin.EOS)) {
-            Integer eosBestRange = coinService.checkRange(Coin.EOS);
-            CoinService.bestCoinRange.put(Coin.EOS, eosBestRange);
-        }
-        if (null == CoinService.bestCoinRange.get(Coin.NEO)) {
-            Integer neoBestRange = coinService.checkRange(Coin.NEO);
-            CoinService.bestCoinRange.put(Coin.NEO, neoBestRange);
-        }
-
         if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
             Integer btcBestRange = coinService.checkRange(Coin.BTC);
             CoinService.bestCoinRange.put(Coin.BTC, btcBestRange);
@@ -83,9 +70,9 @@ public class CoinSchedule {
 
         coinService.checkCSV();
 
-        CheckResult btcCheckResult = BotUtil.check(Coin.getFileName(Coin.BTC), CoinService.bestCoinRange.get(Coin.BTC));
-        CheckResult eosCheckResult = BotUtil.check(Coin.getFileName(Coin.EOS), CoinService.bestCoinRange.get(Coin.EOS));
-        CheckResult neoCheckResult = BotUtil.check(Coin.getFileName(Coin.NEO), CoinService.bestCoinRange.get(Coin.NEO));
+        CheckResult btcCheckResult = BotUtil.check(Coin.getFileName(Coin.BTC), coinService.rangeGet(Coin.BTC));
+        CheckResult eosCheckResult = BotUtil.check(Coin.getFileName(Coin.EOS), coinService.rangeGet(Coin.EOS));
+        CheckResult neoCheckResult = BotUtil.check(Coin.getFileName(Coin.NEO), coinService.rangeGet(Coin.NEO));
 
         double cashTotal = Double.valueOf(exchangeRemote.getTradeAmount("usdt"));
         int cashPiece = 3 - ExchangeRemote.TRADE_STATUS.buyTotal();
