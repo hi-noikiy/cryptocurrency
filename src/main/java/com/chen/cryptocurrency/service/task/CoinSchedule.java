@@ -108,7 +108,6 @@ public class CoinSchedule {
                 MailUtil.sendMail("Should buy EOS!price : " + eosCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
                     exchangeRemote.buyMarket(Coin.EOS.getSymbol() + "_usdt", String.valueOf(cash));
-
                 }
             }
             if (neoCheckResult.shouldBuy()) {
@@ -117,7 +116,6 @@ public class CoinSchedule {
                 MailUtil.sendMail("Should buy NEO!price : " + neoCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
                     exchangeRemote.buyMarket(Coin.NEO.getSymbol() + "_usdt", String.valueOf(cash));
-
                 }
             }
         }

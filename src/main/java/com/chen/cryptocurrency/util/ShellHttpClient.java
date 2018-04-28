@@ -62,17 +62,12 @@ public class ShellHttpClient implements CoinHttpClient {
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
-                    logger.info("line empty");
                     break;
                 }
-                logger.info("line:{}", line);
-
                 builder.append(line);
             }
             process.destroy();
             reader.close();
-
-            logger.info("exec result:{}", builder.toString());
 
             return builder.toString();
         } catch (Exception e) {
@@ -80,8 +75,6 @@ public class ShellHttpClient implements CoinHttpClient {
             logger.error("sh 执行失败 ， cmd:{}", sh);
             MailUtil.sendMail("sh 执行失败，请检查", sh + "_" + param);
         }
-        logger.info("exec result is null");
-
         return null;
     }
 
@@ -93,10 +86,5 @@ public class ShellHttpClient implements CoinHttpClient {
     public String post(String url, String body) {
         String sh = "./post.sh";
         return exec(sh, Arrays.asList(url, body));
-    }
-
-    public static void main(String[] args) {
-        ShellHttpClient client = new ShellHttpClient();
-        System.out.println(client.get("www.baidu.com"));
     }
 }
