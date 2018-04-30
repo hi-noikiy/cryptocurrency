@@ -40,8 +40,12 @@ public class CoinSchedule {
         try {
             coinService.csvSync();
         } catch (Exception e) {
-            logger.error("write csv task error!!!");
-            MailUtil.sendMail("同步数据出错","从交易所读取数据出错，请检查网络！");
+            try{
+                coinService.csvSync();
+            }catch (Exception finalE){
+                logger.error("write csv task error!!!",finalE);
+                MailUtil.sendMail("同步数据出错","从交易所读取数据出错，请检查网络！");
+            }
         }
     }
 
