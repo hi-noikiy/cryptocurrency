@@ -2,21 +2,18 @@ package com.chen.cryptocurrency.controller;
 
 import com.chen.cryptocurrency.remote.ExchangeRemote;
 import com.chen.cryptocurrency.service.CoinService;
-import com.chen.cryptocurrency.service.bean.*;
+import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.util.BotUtil;
-import com.chen.cryptocurrency.util.CoinHttpClient;
 import com.chen.cryptocurrency.util.Constant;
-import com.chen.cryptocurrency.util.ShellHttpClient;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.ta4j.core.Trade;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenxiaotong
@@ -25,131 +22,53 @@ import java.util.List;
 
 @RestController
 @EnableAutoConfiguration
-@RequestMapping("/coin")
+@RequestMapping("/door")
 public class CoinController {
     @Resource
     private CoinService coinService;
-    @Resource
-    private ExchangeRemote exchangeRemote;
-
-    @RequestMapping("/api")
-    String trade(@RequestParam String domain,
-                 @RequestParam String url,
-                 @RequestParam String type) {
-
-        CoinHttpClient client = ShellHttpClient.getInstance();
-        if ("post".equals(type)) {
-            client.requestHttpPost(domain, url, "", Maps.newHashMap());
-        } else {
-            client.requestHttpGet(domain, url, "");
-        }
-        return "ok";
-    }
-
-    @RequestMapping("/trade")
-    String trade(@RequestParam String symbol,
-                 @RequestParam String type,
-                 @RequestParam String price,
-                 @RequestParam String amount) {
-        coinService.trade(symbol, type, price, amount);
-        return "ok";
-    }
-
-    @RequestMapping("/current")
-    String current() {
-        Trade btcTrade = BotUtil.current(Constant.BTC_FILE_NAME, coinService.rangeGet(Coin.BTC));
-        Trade eosTrade = BotUtil.current(Constant.EOS_FILE_NAME, coinService.rangeGet(Coin.EOS));
-        Trade neoTrade = BotUtil.current(Constant.NEO_FILE_NAME, coinService.rangeGet(Coin.NEO));
-
-        return btcTrade.toString() + "\n"
-                + eosTrade.toString() + "\n"
-                + neoTrade.toString() + "\n";
-    }
-
-    @RequestMapping("/test/check")
-    String check() {
-        BotUtil.check("btc.csv", 34);
-        return "ok";
-    }
-
-    @RequestMapping("/test/trade")
-    String trade(@RequestParam String price, @RequestParam String amount) {
-        coinService.trade("btc_usdt", "sell", price, amount);
-        return "ok";
-    }
 
     @RequestMapping("/test/writeCSV")
     String writeCSV() {
         coinService.csvSync();
-
         return "ok";
     }
 
-    @RequestMapping("/test/checkBS")
-    String checkBS() {
+    @RequestMapping("/trade/current")
+    @ResponseBody
+    Map<Coin,Trade> current() {
+        Trade btcTrade = BotUtil.current(Constant.BTC_FILE_NAME, coinService.rangeGet(Coin.BTC));
+        Trade eosTrade = BotUtil.current(Constant.EOS_FILE_NAME, coinService.rangeGet(Coin.EOS));
+        Trade neoTrade = BotUtil.current(Constant.NEO_FILE_NAME, coinService.rangeGet(Coin.NEO));
+
+        Map<Coin, Trade> result = Maps.newHashMap();
+        result.put(Coin.BTC, btcTrade);
+        result.put(Coin.EOS, eosTrade);
+        result.put(Coin.NEO, neoTrade);
+
+        return result;
+    }
+
+    @RequestMapping("/trade/checkBS")
+    @ResponseBody
+    Map<Coin,Integer> checkBS() {
         Integer btcBestRange = coinService.checkRange(Coin.BTC);
         Integer eosBestRange = coinService.checkRange(Coin.EOS);
         Integer neoBestRange = coinService.checkRange(Coin.NEO);
 
-        return "btc:" + btcBestRange
-                + "eos:" + eosBestRange
-                + "neo:" + neoBestRange;
-    }
+        Map<Coin, Integer> result = Maps.newHashMap();
+        result.put(Coin.BTC, btcBestRange);
+        result.put(Coin.EOS, eosBestRange);
+        result.put(Coin.NEO, neoBestRange);
 
-    @RequestMapping("/test/tradeMarket")
-    String tradeMarket(@RequestParam() String symbol,
-                       @RequestParam(required = false) String price,
-                       @RequestParam(required = false) String amount) {
-        if (StringUtils.isNotEmpty(price)) {
-            exchangeRemote.buyMarket(symbol, price);
-        }
-        if (StringUtils.isNotEmpty(amount)) {
-            exchangeRemote.sellMarket(symbol, amount);
-        }
-        return "ok";
-    }
-
-    @RequestMapping("/test/trade/task")
-    String tradeTask() {
-        CheckResult btcCheckResult = BotUtil.check("btc.csv", 10);
-
-        exchangeRemote.trade(Coin.BTC.getSymbol() + "_usdt", "sell", btcCheckResult.getPrice().multipliedBy(2).toString(), exchangeRemote.getTradeAmount("btc"));
-        return "ok";
-    }
-
-    @RequestMapping("/test/status")
-    String status() {
-        String result = ("ACCOUNT_STATUS : " + ExchangeRemote.ACCOUNT_STATUS.toString());
-        result += "\n";
-        result += ("TRADE_STATUS" + ExchangeRemote.TRADE_STATUS);
         return result;
     }
 
-    @RequestMapping("/task/add")
-    String add(@RequestParam String symbol,
-               @RequestParam String type) {
-
-        coinService.addTask(symbol, type);
-        return "ok";
-    }
-
-    @RequestMapping("/task/del")
-    String del(@RequestParam String symbol,
-               @RequestParam String type) {
-        coinService.delTask(symbol, type);
-        return "ok";
-    }
-
-    @RequestMapping("/task/list")
-    List<TaskItem> list() {
-        return coinService.listTask();
-    }
-
-    @RequestMapping("/kline")
-    void kline() {
-        List<KLineItem> neoLine = exchangeRemote.kLine(Coin.NEO.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
-        for (int i = 1; i < 5; i++) {
-            System.out.println(neoLine.get(neoLine.size() - i));
-        }
+    @RequestMapping("/trade/status")
+    @ResponseBody
+    Map<String,Object> status() {
+        Map<String, Object> result = Maps.newHashMap();
+        result.put("ACCOUNT_STATUS", ExchangeRemote.ACCOUNT_STATUS.toString());
+        result.put("TRADE_STATUS", ExchangeRemote.TRADE_STATUS);
+        return result;
     }
 }
