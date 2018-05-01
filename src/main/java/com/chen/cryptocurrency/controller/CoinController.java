@@ -40,7 +40,7 @@ public class CoinController {
         Trade eosTrade = BotUtil.current(Constant.EOS_FILE_NAME, coinService.rangeGet(Coin.EOS));
         Trade neoTrade = BotUtil.current(Constant.NEO_FILE_NAME, coinService.rangeGet(Coin.NEO));
 
-        Map<Coin, Trade> result = Maps.newHashMap();
+        Map<Coin, Trade> result = Maps.newTreeMap();
         result.put(Coin.BTC, btcTrade);
         result.put(Coin.EOS, eosTrade);
         result.put(Coin.NEO, neoTrade);
@@ -55,7 +55,7 @@ public class CoinController {
         Integer eosBestRange = coinService.checkRange(Coin.EOS);
         Integer neoBestRange = coinService.checkRange(Coin.NEO);
 
-        Map<Coin, Integer> result = Maps.newHashMap();
+        Map<Coin, Integer> result = Maps.newTreeMap();
         result.put(Coin.BTC, btcBestRange);
         result.put(Coin.EOS, eosBestRange);
         result.put(Coin.NEO, neoBestRange);
@@ -66,7 +66,7 @@ public class CoinController {
     @RequestMapping("/trade/status")
     @ResponseBody
     Map<String,Object> status() {
-        Map<String, Object> result = Maps.newHashMap();
+        Map<String, Object> result = Maps.newTreeMap();
         result.put("ACCOUNT_STATUS", ExchangeRemote.ACCOUNT_STATUS.toString());
         result.put("TRADE_STATUS", ExchangeRemote.TRADE_STATUS);
         return result;
