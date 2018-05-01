@@ -7,6 +7,7 @@ import com.chen.cryptocurrency.service.bean.Coin;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.Constant;
 import com.chen.cryptocurrency.util.MailUtil;
+import com.chen.cryptocurrency.util.SMSUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,6 +47,7 @@ public class CoinSchedule {
             }catch (Exception finalE){
                 logger.error("write csv task error!!!",finalE);
                 MailUtil.sendMail("同步数据出错","从交易所读取数据出错，请检查网络！");
+                SMSUtil.sendError();
             }
         }
     }

@@ -1,7 +1,10 @@
 package com.chen.cryptocurrency.util;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -17,8 +20,6 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class HttpUtil implements CoinHttpClient {
     private static HttpUtil instance = new HttpUtil();
     private static HttpClient client;
     private static long startTime = System.currentTimeMillis();
-    public static PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+    private static PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
     private static ConnectionKeepAliveStrategy keepAliveStart = new DefaultConnectionKeepAliveStrategy() {
         @Override
         public long getKeepAliveDuration(
@@ -53,7 +54,7 @@ public class HttpUtil implements CoinHttpClient {
         client = HttpClients.custom().setConnectionManager(cm).setKeepAliveStrategy(keepAliveStart).build();
     }
 
-    public static void idleConnectionMonitor() {
+    private static void idleConnectionMonitor() {
 
         if (System.currentTimeMillis() - startTime > TIME_OUT) {
             startTime = System.currentTimeMillis();
@@ -87,9 +88,12 @@ public class HttpUtil implements CoinHttpClient {
 
     @Override
     public String requestHttpGet(String domain, String url, String param) {
-
         idleConnectionMonitor();
         url = domain + url + param;
+        return requestHttpGet(url);
+    }
+
+    public String requestHttpGet(String url) {
         HttpRequestBase method = this.httpGetMethod(url);
         method.setConfig(requestConfig);
         HttpResponse response = null;
@@ -153,7 +157,7 @@ public class HttpUtil implements CoinHttpClient {
     }
 
     private List<NameValuePair> convertMap2PostParams(Map<String, String> params) {
-        List<String> keys = new ArrayList<String>(params.keySet());
+        List<String> keys = new ArrayList<>(params.keySet());
         if (keys.isEmpty()) {
             return new ArrayList<>();
         }
