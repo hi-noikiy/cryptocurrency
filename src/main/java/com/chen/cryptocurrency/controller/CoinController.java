@@ -51,9 +51,10 @@ public class CoinController {
     @RequestMapping("/trade/checkBS")
     @ResponseBody
     Map<Coin,Integer> checkBS() {
-        Integer btcBestRange = coinService.checkRange(Coin.BTC);
-        Integer eosBestRange = coinService.checkRange(Coin.EOS);
-        Integer neoBestRange = coinService.checkRange(Coin.NEO);
+
+        Integer btcBestRange = coinService.rangeGet(Coin.BTC);
+        Integer eosBestRange = coinService.rangeGet(Coin.EOS);
+        Integer neoBestRange = coinService.rangeGet(Coin.NEO);
 
         Map<Coin, Integer> result = Maps.newTreeMap();
         result.put(Coin.BTC, btcBestRange);
