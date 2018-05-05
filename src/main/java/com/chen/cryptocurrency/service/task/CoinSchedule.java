@@ -8,13 +8,16 @@ import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.Constant;
 import com.chen.cryptocurrency.util.MailUtil;
 import com.chen.cryptocurrency.util.SMSUtil;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.ta4j.core.Decimal;
 import org.ta4j.core.Trade;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * @author chenxiaotong
@@ -36,23 +39,23 @@ public class CoinSchedule {
         exchangeRemote.syncStatus();
     }
 
-    @Scheduled(cron = "30 1 0/2 * * ?")
+    @Scheduled(cron = "30 1 0/1 * * ?")
     public void writeTask() {
         logger.info("write csv task, begin !");
         try {
             coinService.csvSync();
         } catch (Exception e) {
-            try{
+            try {
                 coinService.csvSync();
-            }catch (Exception finalE){
-                logger.error("write csv task error!!!",finalE);
-                MailUtil.sendMail("同步数据出错","从交易所读取数据出错，请检查网络！");
+            } catch (Exception finalE) {
+                logger.error("write csv task error!!!", finalE);
+                MailUtil.sendMail("同步数据出错", "从交易所读取数据出错，请检查网络！");
                 SMSUtil.sendError();
             }
         }
     }
 
-    @Scheduled(cron = "0 30 0/12 * * ?")
+    @Scheduled(cron = "0 30 0/6 * * ?")
     public void checkBestRange() {
         logger.info("check best range !");
 
@@ -71,7 +74,9 @@ public class CoinSchedule {
         }
     }
 
-    @Scheduled(cron = "0 2 0/2 * * ? ")
+    private Map<Coin, Decimal> tradeRecord = Maps.newHashMap();
+
+    @Scheduled(cron = "0 2 0/1 * * ? ")
     public void checkBuySell() {
         logger.info("check buy/sell task begin !");
 
@@ -93,27 +98,27 @@ public class CoinSchedule {
             double cash = (cashTotal - 1) / cashPiece;
 
             if (btcCheckResult.shouldBuy() || btcTrade.getEntry() != null) {
-                logger.info("check result : Should buy BTC!");
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), cash);
-                MailUtil.sendMail("Should buy BTC!price : " + btcCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
+                    MailUtil.sendMail("Should buy BTC!", "price : " + btcCheckResult.getPrice());
                     exchangeRemote.buyMarket(Coin.BTC.getSymbol() + "_usdt", String.valueOf(cash));
+                    tradeRecord.put(Coin.BTC, btcCheckResult.getPrice());
                 }
             }
             if (eosCheckResult.shouldBuy() || eosTrade.getEntry() != null) {
-                logger.info("check result : Should buy EOS!");
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), cash);
-                MailUtil.sendMail("Should buy EOS!price : " + eosCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
+                    MailUtil.sendMail("Should buy EOS!", "price : " + eosCheckResult.getPrice());
                     exchangeRemote.buyMarket(Coin.EOS.getSymbol() + "_usdt", String.valueOf(cash));
+                    tradeRecord.put(Coin.EOS, eosCheckResult.getPrice());
                 }
             }
             if (neoCheckResult.shouldBuy() || neoTrade.getEntry() != null) {
-                logger.info("check result : Should buy NEO!");
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), cash);
-                MailUtil.sendMail("Should buy NEO!price : " + neoCheckResult.getPrice(), "look up");
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
+                    MailUtil.sendMail("Should buy NEO!", "price : " + neoCheckResult.getPrice());
                     exchangeRemote.buyMarket(Coin.NEO.getSymbol() + "_usdt", String.valueOf(cash));
+                    tradeRecord.put(Coin.NEO, neoCheckResult.getPrice());
                 }
             }
         }
@@ -122,35 +127,33 @@ public class CoinSchedule {
         // 已经持有，检查是否sell
         if (ExchangeRemote.TRADE_STATUS.buyTotal() > 0) {
             if (btcCheckResult.shouldSell()
-                    || btcTrade.getExit()!= null
-                    || (btcTrade.getEntry() == null && btcTrade.getExit()==null)) {
-                logger.info("check result : Should sell BTC!");
+                    || btcTrade.getExit() != null
+                    || (btcTrade.getEntry() == null && btcTrade.getExit() == null)) {
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), exchangeRemote.getTradeAmount("btc"));
-                MailUtil.sendMail("Should sell BTC!price : " + btcCheckResult.getPrice(), "look up!");
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 1) {
+                    MailUtil.sendMail("Should sell BTC!", "buy:" + tradeRecord.get(Coin.BTC) + ",sell:" + btcCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.BTC.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("btc"));
+                    tradeRecord.remove(Coin.BTC);
                 }
             }
             if (eosCheckResult.shouldSell()
-                    || eosTrade.getExit()!= null
-                    || (eosTrade.getEntry() == null && eosTrade.getExit()==null)) {
-                logger.info("check result : Should sell EOS!");
+                    || eosTrade.getExit() != null
+                    || (eosTrade.getEntry() == null && eosTrade.getExit() == null)) {
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), exchangeRemote.getTradeAmount("eos"));
-                MailUtil.sendMail("Should sell EOS!price : " + eosCheckResult.getPrice(), "look up!");
-
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 1) {
+                    MailUtil.sendMail("Should sell EOS!", "buy:" + tradeRecord.get(Coin.EOS) + ",sell:" + eosCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.EOS.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("eos"));
+                    tradeRecord.remove(Coin.EOS);
                 }
             }
             if (neoCheckResult.shouldSell()
-                    || neoTrade.getExit()!= null
-                    || (neoTrade.getEntry() == null && neoTrade.getExit()==null)) {
-                logger.info("check result : Should sell NEO!");
+                    || neoTrade.getExit() != null
+                    || (neoTrade.getEntry() == null && neoTrade.getExit() == null)) {
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), exchangeRemote.getTradeAmount("neo"));
-                MailUtil.sendMail("Should sell NEO!price : " + neoCheckResult.getPrice(), "look up!");
-
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 1) {
+                    MailUtil.sendMail("Should sell NEO!", "buy:" + tradeRecord.get(Coin.NEO) + ",sell:" + neoCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.NEO.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("neo"));
+                    tradeRecord.remove(Coin.NEO);
                 }
             }
         }
