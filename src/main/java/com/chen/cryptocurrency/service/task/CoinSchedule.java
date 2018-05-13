@@ -18,6 +18,7 @@ import org.ta4j.core.Trade;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author chenxiaotong
@@ -46,6 +47,7 @@ public class CoinSchedule {
             coinService.csvSync();
         } catch (Exception e) {
             try {
+                TimeUnit.SECONDS.sleep(10);
                 coinService.csvSync();
             } catch (Exception finalE) {
                 logger.error("write csv task error!!!", finalE);
