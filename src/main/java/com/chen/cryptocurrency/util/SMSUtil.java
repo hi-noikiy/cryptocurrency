@@ -1,5 +1,7 @@
 package com.chen.cryptocurrency.util;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 import org.springframework.util.Base64Utils;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -15,15 +17,38 @@ import java.util.*;
  * @date 2018/1/25
  */
 public class SMSUtil {
+    private static String accessKeyId = "LTAIqwRQP26LV9fA";
+    private static String accessSecret = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
+
+    private static String phone = "18516198920";
+
     public static void sendError() {
-        String accessKeyId = "LTAIqwRQP26LV9fA";
-        String accessSecret = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
-        String phone = "18516198920";
         String signName = "Current服务";
         String templateCode = "SMS_133976724";
+
+        Map<String, String> paras = buildTemplate(signName, templateCode, Maps.newHashMap());
+
+        sendSMS(paras);
+    }
+
+    public static void sendNotify(String opt, String value) {
+        String signName = "操作提醒";
+        String templateCode = "SMS_135030811";
+
+        Map<String, String> param = Maps.newHashMap();
+        param.put("operation", opt);
+        param.put("value", value);
+
+        Map<String, String> paras = buildTemplate(signName, templateCode, param);
+        sendSMS(paras);
+    }
+
+    private static Map<String, String> buildTemplate(String signName, String templateCode, Map<String, String> param) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         // 这里一定要设置GMT时区
         df.setTimeZone(new SimpleTimeZone(8, "GMT"));
+
+        String paramJson = JSON.toJSONString(param);
         Map<String, String> paras = new HashMap<>();
         // 1. 系统参数
         paras.put("SignatureMethod", "HMAC-SHA1");
@@ -45,6 +70,10 @@ public class SMSUtil {
         if (paras.containsKey("Signature")) {
             paras.remove("Signature");
         }
+        return paras;
+    }
+
+    private static void sendSMS(Map<String, String> paras) {
         // 4. 参数KEY排序
         TreeMap<String, String> sortParas = new TreeMap<>(paras);
         // 5. 构造待签名的字符串
@@ -77,6 +106,11 @@ public class SMSUtil {
         }
     }
 
+    public static void main(String[] args) {
+        Map<String, String> param = Maps.newHashMap();
+        param.put("key", "value");
+        System.out.println(JSON.toJSONString(param));
+    }
 
     private static String specialUrlEncode(String value) throws UnsupportedEncodingException {
         return URLEncoder.encode(value, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
