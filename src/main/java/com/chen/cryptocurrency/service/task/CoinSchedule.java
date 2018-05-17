@@ -103,6 +103,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), cash);
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 0) {
                     MailUtil.sendMail("Should buy BTC!", "price : " + btcCheckResult.getPrice());
+                    SMSUtil.sendNotify("Buy BTC", String.valueOf(btcCheckResult.getPrice()));
                     exchangeRemote.buyMarket(Coin.BTC.getSymbol() + "_usdt", String.valueOf(cash));
                     tradeRecord.put(Coin.BTC, btcCheckResult.getPrice());
                 }
@@ -111,6 +112,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), cash);
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 0) {
                     MailUtil.sendMail("Should buy EOS!", "price : " + eosCheckResult.getPrice());
+                    SMSUtil.sendNotify("Buy EOS", String.valueOf(eosCheckResult.getPrice()));
                     exchangeRemote.buyMarket(Coin.EOS.getSymbol() + "_usdt", String.valueOf(cash));
                     tradeRecord.put(Coin.EOS, eosCheckResult.getPrice());
                 }
@@ -119,6 +121,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), cash);
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 0) {
                     MailUtil.sendMail("Should buy NEO!", "price : " + neoCheckResult.getPrice());
+                    SMSUtil.sendNotify("Buy NEO", String.valueOf(neoCheckResult.getPrice()));
                     exchangeRemote.buyMarket(Coin.NEO.getSymbol() + "_usdt", String.valueOf(cash));
                     tradeRecord.put(Coin.NEO, neoCheckResult.getPrice());
                 }
@@ -134,6 +137,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.BTC.getSymbol() + "_usdt", btcCheckResult.getPrice(), exchangeRemote.getTradeAmount("btc"));
                 if (ExchangeRemote.TRADE_STATUS.getBtcStatus() == 1) {
                     MailUtil.sendMail("Should sell BTC!", "buy:" + tradeRecord.get(Coin.BTC) + ",sell:" + btcCheckResult.getPrice());
+                    SMSUtil.sendNotify("Sell BTC", String.valueOf(tradeRecord.get(Coin.BTC)) + "-" + btcCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.BTC.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("btc"));
                     tradeRecord.remove(Coin.BTC);
                 }
@@ -144,6 +148,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.EOS.getSymbol() + "_usdt", eosCheckResult.getPrice(), exchangeRemote.getTradeAmount("eos"));
                 if (ExchangeRemote.TRADE_STATUS.getEosStatus() == 1) {
                     MailUtil.sendMail("Should sell EOS!", "buy:" + tradeRecord.get(Coin.EOS) + ",sell:" + eosCheckResult.getPrice());
+                    SMSUtil.sendNotify("Sell EOS", String.valueOf(tradeRecord.get(Coin.EOS)) + "-" + eosCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.EOS.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("eos"));
                     tradeRecord.remove(Coin.EOS);
                 }
@@ -154,6 +159,7 @@ public class CoinSchedule {
                 logger.info("symbol:{},price:{},amount:{}", Coin.NEO.getSymbol() + "_usdt", neoCheckResult.getPrice(), exchangeRemote.getTradeAmount("neo"));
                 if (ExchangeRemote.TRADE_STATUS.getNeoStatus() == 1) {
                     MailUtil.sendMail("Should sell NEO!", "buy:" + tradeRecord.get(Coin.NEO) + ",sell:" + neoCheckResult.getPrice());
+                    SMSUtil.sendNotify("Sell NEO", String.valueOf(tradeRecord.get(Coin.NEO)) + "-" + neoCheckResult.getPrice());
                     exchangeRemote.sellMarket(Coin.NEO.getSymbol() + "_usdt", exchangeRemote.getTradeAmount("neo"));
                     tradeRecord.remove(Coin.NEO);
                 }
