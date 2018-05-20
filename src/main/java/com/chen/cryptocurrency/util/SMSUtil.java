@@ -17,16 +17,16 @@ import java.util.*;
  * @date 2018/1/25
  */
 public class SMSUtil {
-    private static final String accessKeyId = "LTAIqwRQP26LV9fA";
-    private static final String accessSecret = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
-    private static final String phone = "18516198920";
+    private static final String ACCESS_KEY_ID = "LTAIqwRQP26LV9fA";
+    private static final String ACCESS_SECRET = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
+    private static final String PHONE = "18516198920";
 
     public static void sendError() {
         String signName = "Current服务";
         String templateCode = "SMS_133976724";
 
         Map<String, String> paras = buildTemplate(signName, templateCode, Maps.newHashMap());
-
+        send(paras);
     }
 
     public static void sendNotify(String opt, String value) {
@@ -36,7 +36,7 @@ public class SMSUtil {
         param.put("operation", opt);
         param.put("value", value);
         Map<String, String> paras = buildTemplate(signName, templateCode, param);
-
+        send(paras);
     }
 
     private static Map<String, String> buildTemplate(String signName, String templateCode, Map<String, String> param) {
@@ -47,7 +47,7 @@ public class SMSUtil {
         // 1. 系统参数
         paras.put("SignatureMethod", "HMAC-SHA1");
         paras.put("SignatureNonce", UUID.randomUUID().toString());
-        paras.put("AccessKeyId", accessKeyId);
+        paras.put("AccessKeyId", ACCESS_KEY_ID);
         paras.put("SignatureVersion", "1.0");
         paras.put("Timestamp", df.format(new Date()));
         paras.put("Format", "XML");
@@ -55,7 +55,7 @@ public class SMSUtil {
         paras.put("Action", "SendSms");
         paras.put("Version", "2017-05-25");
         paras.put("RegionId", "cn-hangzhou");
-        paras.put("PhoneNumbers", phone);
+        paras.put("PhoneNumbers", PHONE);
         paras.put("SignName", signName);
         paras.put("TemplateParam", JSON.toJSONString(param));
         paras.put("TemplateCode", templateCode);
@@ -86,7 +86,7 @@ public class SMSUtil {
             String stringToSign = "GET" + "&" +
                     specialUrlEncode("/") + "&" +
                     specialUrlEncode(sortedQueryString);
-            String sign = sign(accessSecret + "&", stringToSign);
+            String sign = sign(ACCESS_SECRET + "&", stringToSign);
 
             // 6. 签名最后也要做特殊URL编码
             String signature = specialUrlEncode(sign);
