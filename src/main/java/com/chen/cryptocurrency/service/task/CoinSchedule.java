@@ -77,14 +77,30 @@ public class CoinSchedule {
     }
 
     private Map<Coin, Decimal> tradeRecord = Maps.newHashMap();
-
+    private volatile boolean sync = false;
     @Scheduled(cron = "0 2 0/1 * * ? ")
     public void checkBuySell() {
         logger.info("check buy/sell task begin !");
-        try {
-            this.writeTask();
-        } catch (Exception e) {
-            logger.error("write csv before buy sell error");
+        int retryCount = 0;
+        while (!sync && retryCount < 999) {
+            retryCount++;
+            try {
+                coinService.csvSync();
+                sync = true;
+            } catch (Exception e) {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }
+        }
+
+        if (!sync) {
+            logger.error("Write csv before buy sell error");
+            MailUtil.sendMail("同步数据出错", "从交易所读取数据出错，请检查网络！");
+            SMSUtil.sendError();
+            return;
         }
 
         coinService.checkCSV();
@@ -170,5 +186,7 @@ public class CoinSchedule {
                 }
             }
         }
+
+        sync = false;
     }
 }
