@@ -2,6 +2,8 @@ package com.chen.cryptocurrency.util;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -17,6 +19,7 @@ import java.util.*;
  * @date 2018/1/25
  */
 public class SMSUtil {
+    private static Logger logger = LoggerFactory.getLogger(SMSUtil.class);
     private static final String ACCESS_KEY_ID = "LTAIqwRQP26LV9fA";
     private static final String ACCESS_SECRET = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
     private static final String PHONE = "18516198920";
@@ -68,6 +71,7 @@ public class SMSUtil {
     }
 
     private static void send(Map<String, String> paras) {
+        logger.info("[SMS]send sms, paras : {}", paras);
         // 4. 参数KEY排序
         TreeMap<String, String> sortParas = new TreeMap<>(paras);
         // 5. 构造待签名的字符串
@@ -93,8 +97,9 @@ public class SMSUtil {
 
             // 最终打印出合法GET请求的URL
             String url = "http://dysmsapi.aliyuncs.com/?Signature=" + signature + sortQueryStringTmp;
-            HttpUtil.getInstance().requestHttpGet(url);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException | InvalidKeyException e) {
+            String res = HttpUtil.getInstance().requestHttpGet(url);
+            logger.info("[SMS]send result:{}", res);
+        } catch (Exception e) {
             MailUtil.sendMail("短信发送失败", "短信发送失败，异常原因:" + e.getMessage());
             e.printStackTrace();
         }
