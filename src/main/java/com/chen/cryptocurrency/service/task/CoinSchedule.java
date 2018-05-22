@@ -81,6 +81,11 @@ public class CoinSchedule {
     @Scheduled(cron = "0 2 0/1 * * ? ")
     public void checkBuySell() {
         logger.info("check buy/sell task begin !");
+        try {
+            this.writeTask();
+        } catch (Exception e) {
+            logger.error("write csv before buy sell error");
+        }
 
         coinService.checkCSV();
 
