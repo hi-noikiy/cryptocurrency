@@ -26,6 +26,8 @@ import java.util.Map;
 public class CoinController {
     @Resource
     private CoinService coinService;
+    @Resource
+    private ExchangeRemote exchangeRemote;
 
     @RequestMapping("/test/writeCSV")
     String writeCSV() {
@@ -33,9 +35,15 @@ public class CoinController {
         return "ok";
     }
 
+    @RequestMapping("/test/syncStatus")
+    String syncStatus() {
+        exchangeRemote.syncStatus();
+        return "ok";
+    }
+
     @RequestMapping("/trade/current")
     @ResponseBody
-    Map<Coin,Trade> current() {
+    Map<Coin, Trade> current() {
         Trade btcTrade = BotUtil.current(Constant.BTC_FILE_NAME, coinService.rangeGet(Coin.BTC));
         Trade eosTrade = BotUtil.current(Constant.EOS_FILE_NAME, coinService.rangeGet(Coin.EOS));
         Trade neoTrade = BotUtil.current(Constant.NEO_FILE_NAME, coinService.rangeGet(Coin.NEO));
@@ -50,7 +58,7 @@ public class CoinController {
 
     @RequestMapping("/trade/checkBS")
     @ResponseBody
-    Map<Coin,Integer> checkBS() {
+    Map<Coin, Integer> checkBS() {
 
         Integer btcBestRange = coinService.rangeGet(Coin.BTC);
         Integer eosBestRange = coinService.rangeGet(Coin.EOS);
@@ -66,7 +74,7 @@ public class CoinController {
 
     @RequestMapping("/trade/status")
     @ResponseBody
-    Map<String,Object> status() {
+    Map<String, Object> status() {
         Map<String, Object> result = Maps.newTreeMap();
         result.put("ACCOUNT_STATUS", ExchangeRemote.ACCOUNT_STATUS.toString());
         result.put("TRADE_STATUS", ExchangeRemote.TRADE_STATUS);

@@ -71,7 +71,6 @@ public class ShellHttpClient implements CoinHttpClient {
 
             return builder.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("sh 执行失败 ， cmd:{}", sh);
             MailUtil.sendMail("sh 执行失败，请检查", sh + "_" + param);
         }

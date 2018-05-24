@@ -67,6 +67,28 @@ public class ExchangeRemote {
                 .collect(Collectors.toList());
     }
 
+    public static void main(String[] args) {
+        String path = "/api/v1/userinfo.do";
+        Map<String, String> paramMap = Maps.newHashMap();
+
+        String okexApiKey = "f515b319-90e9-4cf3-8f0e-6fae75aaed29";
+        String okexSecretKey = "0FC8FE7D669C4F7F46519188BF27D02F";
+
+        String param = new Param()
+                .add("api_key", okexApiKey)
+                .add("secret_key", okexSecretKey)
+                .build();
+
+        String sign = MD5.encrypt(param);
+        CoinHttpClient httpUtil = ShellHttpClient.getInstance();
+        param = new Param(param).add("sign", sign).build();
+
+        String okexDomain = "https://www.okex.com";
+
+        String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
+        System.out.println(response);
+    }
+
     public void syncStatus() {
         logger.info("[REMOTE]sync status, begin.");
 
