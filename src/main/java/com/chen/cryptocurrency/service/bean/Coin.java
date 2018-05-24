@@ -3,15 +3,14 @@ package com.chen.cryptocurrency.service.bean;
 import static com.chen.cryptocurrency.util.Constant.*;
 
 public enum Coin {
-    BTC("btc","bitcoin"),
-    ETH("eth","ethereum"),
-    EOS("eos","eos"),
-    NEO("neo","neo"),
-    QTUM("qtum","qtum"),
-    NAS("nas","nas"),
-    RDN("rdn","rdn"),
-    ZEC("zec","zec"),
-    ;
+    BTC("btc", "bitcoin"),
+    ETH("eth", "ethereum"),
+    EOS("eos", "eos"),
+    NEO("neo", "neo"),
+    QTUM("qtum", "qtum"),
+    NAS("nas", "nas"),
+    RDN("rdn", "rdn"),
+    ZEC("zec", "zec"),;
 
     String exchangeName;
     String dataName;
@@ -27,6 +26,11 @@ public enum Coin {
     public String getSymbol() {
         return exchangeName;
     }
+
+    public String getTradeSymbol() {
+        return getSymbol() + "_usdt";
+    }
+
     public String getExchangeName() {
         return exchangeName;
     }

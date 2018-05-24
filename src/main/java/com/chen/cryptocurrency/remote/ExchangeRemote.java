@@ -48,6 +48,7 @@ public class ExchangeRemote {
     public static final TradeStatus TRADE_STATUS = new TradeStatus(1, 1, 1);
 
     public List<KLineItem> kLine(String symbol, String type, String exchange) {
+        logger.info("[REMOTE]check kline, begin.");
         String param = "?symbol=" + symbol + "&type=" + type;
 
         String response;
@@ -56,6 +57,8 @@ public class ExchangeRemote {
         } else {
             response = httpUtil.requestHttpGet(okexDomain, okexApiKline, param);
         }
+        logger.info("[REMOTE]check kline, result:{}", response.substring(0, 256));
+
         Gson gson = new Gson();
         List<List> resList = gson.fromJson(response, List.class);
 
@@ -65,6 +68,8 @@ public class ExchangeRemote {
     }
 
     public void syncStatus() {
+        logger.info("[REMOTE]sync status, begin.");
+
         String path = "/api/v1/userinfo.do";
         Map<String, String> paramMap = Maps.newHashMap();
 
@@ -78,6 +83,9 @@ public class ExchangeRemote {
         param = new Param(param).add("sign", sign).build();
 
         String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
+
+        logger.info("[REMOTE]sync status, result:{}", response);
+
         Gson gson = new Gson();
         JsonObject resJson = gson.fromJson(response, JsonObject.class);
 
@@ -88,12 +96,6 @@ public class ExchangeRemote {
         String btc = freeFunds.get("btc").getAsString();
         String eos = freeFunds.get("eos").getAsString();
         String neo = freeFunds.get("neo").getAsString();
-
-        logger.info("account status sync.");
-        logger.info("usdt : {}", usdt);
-        logger.info("btc : {}", btc);
-        logger.info("eos : {}", eos);
-        logger.info("neo : {}", neo);
 
         ACCOUNT_STATUS.put("usdt", usdt);
         ACCOUNT_STATUS.put("btc", btc);
@@ -124,6 +126,7 @@ public class ExchangeRemote {
     }
 
     public void sellMarket(String symbol, String amount) {
+        logger.info("[REMOTE]sell market, begin.");
         logger.info("sell market, symbol:{}, amount:{}.", symbol, amount);
 
         String path = "/api/v1/trade.do";
@@ -142,11 +145,11 @@ public class ExchangeRemote {
         param = new Param(param).add("sign", sign).build();
 
         String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
-        logger.info("trade result : ");
-        logger.info(response);
+        logger.info("[REMOTE]sell market, result:{}", response);
     }
 
     public void buyMarket(String symbol, String price) {
+        logger.info("[REMOTE]buy market, begin.");
         logger.info("buy market, symbol:{}, price:{}.", symbol, price);
 
         String path = "/api/v1/trade.do";
@@ -165,8 +168,7 @@ public class ExchangeRemote {
         param = new Param(param).add("sign", sign).build();
 
         String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
-        logger.info("trade result : ");
-        logger.info(response);
+        logger.info("[REMOTE]buy market, result:{}", response);
     }
 
     public void trade(String symbol, String type, String price, String amount) {
@@ -191,26 +193,5 @@ public class ExchangeRemote {
         String response = httpUtil.requestHttpPost(okexDomain, path, param, paramMap);
         logger.info("trade result : ");
         logger.info(response);
-    }
-
-    public static void main(String[] args) {
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-        HttpUtil httpUtil = HttpUtil.getInstance();
-
-        String domain = "https://www.okex.com";
-        String path = "/api/v1/userinfo.do";
-        Map<String, String> paramMap = Maps.newHashMap();
-
-        String param = new Param()
-                .add("api_key", "f515b319-90e9-4cf3-8f0e-6fae75aaed29")
-                .add("secret_key", "0FC8FE7D669C4F7F46519188BF27D02F")
-                .build();
-        String sign = MD5.encrypt(param);
-        param = new Param(param).add("sign", sign).build();
-
-        String response = httpUtil.requestHttpPost(domain, path, param, paramMap);
-        Gson gson = new Gson();
-        System.out.println(gson.fromJson(response, Map.class));
-
     }
 }
