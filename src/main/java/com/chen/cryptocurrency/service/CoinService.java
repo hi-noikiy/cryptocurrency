@@ -1,12 +1,12 @@
 package com.chen.cryptocurrency.service;
 
 import com.chen.cryptocurrency.remote.ExchangeRemote;
-import com.chen.cryptocurrency.service.bean.*;
-import com.chen.cryptocurrency.service.task.MacdSchedule;
+import com.chen.cryptocurrency.service.bean.Coin;
+import com.chen.cryptocurrency.service.bean.Exchange;
+import com.chen.cryptocurrency.service.bean.KLineItem;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.Constant;
 import com.chen.cryptocurrency.util.FileUtil;
-import com.chen.cryptocurrency.util.IndexUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -22,10 +22,9 @@ import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author chenxiaotong
@@ -36,65 +35,30 @@ public class CoinService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private ExchangeRemote exchangeRemote;
-    public static Map<Coin, Integer> bestCoinRange = Maps.newHashMap();
+    public static final Map<Coin, Integer> BEST_COIN_RANGE = Maps.newHashMap();
 
     public Integer rangeGet(Coin coin) {
-        Integer range = bestCoinRange.get(coin);
-        if (range == null) {
-            range = checkRange(coin);
-            bestCoinRange.put(coin, range);
-        }
-        return range;
+        return BEST_COIN_RANGE.computeIfAbsent(coin, this::checkRange);
     }
 
     public List<KLineItem> queryKLine(String symbol, String type, String exchange) {
         return exchangeRemote.kLine(symbol, type, exchange);
     }
 
-    public List<MACDItem> macd(List<KLineItem> kLineItemList, Integer n) {
-        List<Double> list =
-                kLineItemList.stream().map(item -> Double.valueOf(item.getCloseValue())).collect(Collectors.toList());
-
-        List<MACDItem> result = Lists.newArrayList();
-        for (int i = n; i >= 0; i--) {
-            List<Double> temp = list.subList(0, list.size() - i);
-            result.add(IndexUtil.culMACD(temp, 12, 26, 9));
-        }
-        return result;
-    }
-
-    public List<TaskItem> listTask() {
-        return MacdSchedule.taskItems;
-    }
-
-    public void addTask(String symbol, String type) {
-        TaskItem taskItem = new TaskItem(symbol, type);
-        MacdSchedule.taskItems.add(taskItem);
-    }
-
-    public void delTask(String symbol, String type) {
-        for (TaskItem taskItem : MacdSchedule.taskItems) {
-            if (taskItem.getSymbol().equalsIgnoreCase(symbol)
-                    && taskItem.getType().equalsIgnoreCase(type)) {
-                MacdSchedule.taskItems.remove(taskItem);
-            }
-        }
-    }
-
     public void csvSync() {
-        List<KLineItem> btcLine = queryKLine(Coin.BTC.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
+        List<KLineItem> btcLine = queryKLine(Coin.BTC.getTradeSymbol(), "2hour", Exchange.OKEX.name());
         FileUtil.writeCSV(Constant.BTC_FILE_NAME, btcLine);
         logger.info("csv sync , btc last line :");
         logger.info("last 2:{}", btcLine.get(btcLine.size() - 2));
         logger.info("last 1:{}", btcLine.get(btcLine.size() - 1));
 
-        List<KLineItem> eosLine = queryKLine(Coin.EOS.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
+        List<KLineItem> eosLine = queryKLine(Coin.EOS.getTradeSymbol(), "2hour", Exchange.OKEX.name());
         FileUtil.writeCSV(Constant.EOS_FILE_NAME, eosLine);
         logger.info("csv sync , eos last line :");
         logger.info("last 2:{}", eosLine.get(eosLine.size() - 2));
         logger.info("last 1:{}", eosLine.get(eosLine.size() - 1));
 
-        List<KLineItem> neoLine = queryKLine(Coin.NEO.getSymbol() + "_usdt", "2hour", Exchange.OKEX.name());
+        List<KLineItem> neoLine = queryKLine(Coin.NEO.getTradeSymbol(), "2hour", Exchange.OKEX.name());
         FileUtil.writeCSV(Constant.NEO_FILE_NAME, neoLine);
         logger.info("csv sync , neo last line :");
         logger.info("last 2:{}", neoLine.get(neoLine.size() - 2));
@@ -166,17 +130,16 @@ public class CoinService {
         File neoFile = new File(Constant.NEO_FILE_NAME);
 
         try {
-            List<String> btcLines = Files.readLines(btcFile, Charset.forName("utf-8"));
-            List<String> eosLines = Files.readLines(eosFile, Charset.forName("utf-8"));
-            List<String> neoLines = Files.readLines(neoFile, Charset.forName("utf-8"));
+            List<String> btcLines = Files.readLines(btcFile, StandardCharsets.UTF_8);
+            List<String> eosLines = Files.readLines(eosFile, StandardCharsets.UTF_8);
+            List<String> neoLines = Files.readLines(neoFile, StandardCharsets.UTF_8);
 
             logger.info("Last line of BTC :{}", btcLines.get(btcLines.size() - 1));
             logger.info("Last line of EOS :{}", eosLines.get(eosLines.size() - 1));
             logger.info("Last line of NEO :{}", neoLines.get(neoLines.size() - 1));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("check CSV error.", e);
         }
-
     }
 }
