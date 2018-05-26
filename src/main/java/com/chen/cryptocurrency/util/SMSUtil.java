@@ -23,26 +23,25 @@ public class SMSUtil {
     private static final String ACCESS_KEY_ID = "LTAIqwRQP26LV9fA";
     private static final String ACCESS_SECRET = "pt66ozfQDL3lqsW34iCE2vQ6MUFFv6";
     private static final String PHONE = "18516198920";
+    private static final String SIGN_NAME = "Current服务";
 
     public static void sendError() {
-        String signName = "Current服务";
         String templateCode = "SMS_133976724";
 
-        Map<String, String> paras = buildTemplate(signName, templateCode, Maps.newHashMap());
+        Map<String, String> paras = buildTemplate(templateCode, Maps.newHashMap());
         send(paras);
     }
 
     public static void sendNotify(String opt, String value) {
-        String signName = "操作提醒";
         String templateCode = "SMS_135030811";
         Map<String, String> param = Maps.newHashMap();
         param.put("operation", opt);
         param.put("value", value);
-        Map<String, String> paras = buildTemplate(signName, templateCode, param);
+        Map<String, String> paras = buildTemplate(templateCode, param);
         send(paras);
     }
 
-    private static Map<String, String> buildTemplate(String signName, String templateCode, Map<String, String> param) {
+    private static Map<String, String> buildTemplate(String templateCode, Map<String, String> param) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         // 这里一定要设置GMT时区
         df.setTimeZone(new SimpleTimeZone(8, "GMT"));
@@ -59,7 +58,7 @@ public class SMSUtil {
         paras.put("Version", "2017-05-25");
         paras.put("RegionId", "cn-hangzhou");
         paras.put("PhoneNumbers", PHONE);
-        paras.put("SignName", signName);
+        paras.put("SignName", SIGN_NAME);
         paras.put("TemplateParam", JSON.toJSONString(param));
         paras.put("TemplateCode", templateCode);
 
