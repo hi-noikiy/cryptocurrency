@@ -3,6 +3,7 @@ package com.chen.cryptocurrency.controller;
 import com.chen.cryptocurrency.remote.ExchangeRemote;
 import com.chen.cryptocurrency.service.CoinService;
 import com.chen.cryptocurrency.service.bean.Coin;
+import com.chen.cryptocurrency.service.task.CoinSchedule;
 import com.chen.cryptocurrency.util.BotUtil;
 import com.chen.cryptocurrency.util.Constant;
 import com.google.common.collect.Maps;
@@ -28,6 +29,12 @@ public class CoinController {
     private CoinService coinService;
     @Resource
     private ExchangeRemote exchangeRemote;
+
+    @RequestMapping("/switch")
+    String checkSwitch(Coin c, boolean v) {
+        CoinSchedule.switchCheck(c, v);
+        return "ok";
+    }
 
     @RequestMapping("/test/writeCSV")
     String writeCSV() {
