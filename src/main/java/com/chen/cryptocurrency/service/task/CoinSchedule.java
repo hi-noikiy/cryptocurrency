@@ -28,30 +28,14 @@ import java.util.concurrent.TimeUnit;
 public class CoinSchedule {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static boolean btcCheck = true;
-    private static boolean eosCheck = true;
-    private static boolean neoCheck = true;
+    public static boolean btcCheck = false;
+    public static boolean eosCheck = false;
+    public static boolean neoCheck = false;
 
     @Resource
     private ExchangeRemote exchangeRemote;
     @Resource
     private CoinService coinService;
-
-    public static void switchCheck(Coin coin, boolean v) {
-        switch (coin) {
-            case BTC:
-                btcCheck = v;
-                break;
-            case EOS:
-                eosCheck = v;
-                break;
-            case NEO:
-                neoCheck = v;
-                break;
-            default:
-                break;
-        }
-    }
 
     @Scheduled(cron = "0 0/10 * * * ? ")
     public void syncStatusTask() {

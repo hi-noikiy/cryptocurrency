@@ -32,8 +32,29 @@ public class CoinController {
 
     @RequestMapping("/switch")
     String checkSwitch(Coin c, boolean v) {
-        CoinSchedule.switchCheck(c, v);
-        return "ok";
+        switch (c) {
+            case BTC:
+                CoinSchedule.btcCheck = v;
+                return String.valueOf(CoinSchedule.btcCheck);
+            case EOS:
+                CoinSchedule.eosCheck = v;
+                return String.valueOf(CoinSchedule.eosCheck);
+            case NEO:
+                CoinSchedule.neoCheck = v;
+                return String.valueOf(CoinSchedule.neoCheck);
+            default:
+                return "non match";
+        }
+    }
+
+    @RequestMapping("/switch/status")
+    @ResponseBody
+    Map<Coin, Boolean> checkSwitchStatus() {
+        Map<Coin, Boolean> res = Maps.newHashMap();
+        res.put(Coin.BTC, CoinSchedule.btcCheck);
+        res.put(Coin.EOS, CoinSchedule.eosCheck);
+        res.put(Coin.NEO, CoinSchedule.neoCheck);
+        return res;
     }
 
     @RequestMapping("/test/writeCSV")
